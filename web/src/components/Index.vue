@@ -123,8 +123,7 @@
         themeValue:"0",
         themeList:[
           {color:"#ffffff",value:"0"},
-          {color:"#1E222B",value:"1"},
-          {color:"#0A9168",value:"2"},
+          {color:"#0A9168",value:"1"},
         ],
         breadList:[],
       }
@@ -132,9 +131,6 @@
     mounted(){
       if(localStorage.getItem('theme') === "1"){
         this.themeValue = "1"
-        $("#app").attr('class','black-theme')
-      }else if(localStorage.getItem('theme') === "2"){
-        this.themeValue = "2"
         $("#app").attr('class','green-theme')
       }else{
         this.themeValue = "0"
@@ -224,8 +220,6 @@
         if(value === "0"){
           $("#app").attr('class','white-theme')
         }else if(value === "1"){
-          $("#app").attr('class','black-theme')
-        }else if(value === "2"){
           $("#app").attr('class','green-theme')
         }
       },
