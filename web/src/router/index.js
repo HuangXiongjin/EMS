@@ -14,6 +14,9 @@ import Log from '@/views/system/Log'
 import flowGraph from '@/views/system/flowGraph'
 import BuildTable from '@/views/system/BuildTable'
 
+// 设备
+import list from '@/views/Equipment/list'
+
 
 Vue.use(Router)
 const originalPush = Router.prototype.push
@@ -26,10 +29,11 @@ export default new Router({
     {
       path: '/',
       name: 'Index',
+      meta:{ title:'系统管理' },
       component: Index,
       redirect:'/home', //index主页默认加载home页面
       children:[
-        {path:'/home',name:'home',meta:{ title:'工作台'},component:home},
+        {path:'/home',name:'home',meta:{ title:'首页'},component:home},
         {path:'/Organization',name:'Organization',meta:{ title:'组织架构',type:"系统管理"},component:Organization},
         {path:'/EnterpriseManagement',name:'EnterpriseManagement',meta:{ title:'企业管理',type:"系统管理"},component:EnterpriseManagement},
         {path:'/FactoryManagement',name:'FactoryManagement',meta:{ title:'工厂管理',type:"系统管理"},component:FactoryManagement},
@@ -40,7 +44,16 @@ export default new Router({
         {path:'/Log',name:'Log',meta:{ title:'系统日志',type:"系统管理"},component:Log},
         {path:'/flowGraph',name:'flowGraph',meta:{ title:'流程图管理',type:"系统管理"},component:flowGraph},
         {path:'/BuildTable',name:'BuildTable',meta:{ title:'可视化建表',type:"系统管理"},component:BuildTable},
-
+      ]
+    },
+    {
+      path: '/',
+      name: 'Index',
+      meta:{ title:'设备管理' },
+      component: Index,
+      redirect:'/home', //index主页默认加载home页面
+      children:[
+        {path:'/list',name:'list',meta:{ title:'设备台账',type:"设备管理"},component:list},
       ]
     },
     {

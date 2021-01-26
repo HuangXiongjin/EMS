@@ -3,7 +3,7 @@
     <!-- 头部 -->
     <el-header class="body-head">
       <div class="head-menu floatLeft">
-        <router-link to='/home'><span class="head-title">设备管理系统</span></router-link>
+        <router-link to='/home'><span class="head-title">智能设备管理系统</span></router-link>
       </div>
       <div class="head-menu floatRight">
         <ul>
@@ -54,11 +54,11 @@
           <el-col :span="24">
             <div :style="selfHeight" class="aside-menu">
             <el-menu class="menu-ul" :default-active="defaultActiveUrl" :collapse="menuIsCollapse" :router="true" @select="menuSelect">
-              <template v-for="item in mainMenu" :index="item.url">
-                <el-menu-item v-if="!item.children" :index="item.url"><i :class="item.icon"></i><span slot="title">{{ item.title }}</span></el-menu-item>
-                <el-submenu v-if="item.children" :index="item.title">
+              <template v-for="item in systemOptions" :index="item.url">
+                <el-menu-item v-if="!item.mainMenu" :index="item.url"><i :class="item.icon"></i><span slot="title">{{ item.title }}</span></el-menu-item>
+                <el-submenu v-if="item.mainMenu" :index="item.title">
                   <template slot="title"><i :class="item.icon"></i><span>{{ item.title }}</span></template>
-                  <el-menu-item v-for="(child,childIndex) in item.children" :key="childIndex" :index="child.url"><span style="margin-left:10px;">{{child.title}}</span></el-menu-item>
+                  <el-menu-item v-for="(child,childIndex) in item.mainMenu" :key="childIndex" :index="child.url"><span style="margin-left:10px;">{{child.title}}</span></el-menu-item>
                 </el-submenu>
               </template>
             </el-menu>
@@ -70,12 +70,19 @@
         </el-row>
       </el-aside>
       <!-- 页面主体 -->
-      <el-main style="clear: both;">
-        <transition name="move" mode="out-in">
-         <!--渲染子页面-->
-          <router-view :key="$route.fullPath"></router-view>
-        </transition>
-      </el-main>
+      <el-container>
+        <el-header style="height: 40px;padding-top:10px;">
+          <el-breadcrumb separator="/" style="line-height: 40px;">
+            <el-breadcrumb-item v-for="(item,index) in breadList" :key="index" :to="{ path: item.path }">{{ item.meta.title }}</el-breadcrumb-item>
+          </el-breadcrumb>
+        </el-header>
+        <el-main style="clear: both;">
+          <transition name="move" mode="out-in">
+           <!--渲染子页面-->
+            <router-view :key="$route.fullPath"></router-view>
+          </transition>
+        </el-main>
+      </el-container>
     </el-container>
   </el-container>
 </template>
@@ -92,23 +99,23 @@
         },
         menuIsCollapse: false, //左侧菜单栏是否缩进了
         sideIcon:'el-icon-arrow-left', //左侧菜单栏缩进点击切换图标
-        systemActive:"",
         systemOptions:[
-          {label: '系统管理',icon:"el-icon-s-tools",mainMenu:[
-            {title:"组织架构",icon:"el-icon-office-building",url:"/Organization"},
-            {title:"企业管理",icon:"el-icon-school",url:"/EnterpriseManagement"},
-            {title:"工厂管理",icon:"el-icon-office-building",url:"/FactoryManagement"},
-            {title:"角色权限",icon:"el-icon-s-check",url:"/Role"},
-            {title:"班组管理",icon:"el-icon-receiving",url:"/TeamGroup"},
-            {title:"人员管理",icon:"el-icon-user",url:"/Personnel"},
-            {title:"权限维护",icon:"el-icon-lock",url:"/Permission"},
-            {title:"流程管理",icon:"el-icon-share",url:"/flowGraph"},
-            {title:"可视化建表",icon:"fa fa-database",url:"/BuildTable"},
-            {title:"系统日志",icon:"el-icon-notebook-1",url:"/Log"}
-          ]},
+          {title: '设备管理',icon:"fa fa-archive",mainMenu:[
+              {title:"设备台账",url:"/list"},
+            ]},
+          {title: '系统管理',icon:"el-icon-s-tools",mainMenu:[
+              {title:"组织架构",url:"/Organization"},
+              {title:"企业管理",url:"/EnterpriseManagement"},
+              {title:"工厂管理",url:"/FactoryManagement"},
+              {title:"角色权限",url:"/Role"},
+              {title:"班组管理",url:"/TeamGroup"},
+              {title:"人员管理",url:"/Personnel"},
+              {title:"权限维护",url:"/Permission"},
+              {title:"流程管理",url:"/flowGraph"},
+              {title:"可视化建表",url:"/BuildTable"},
+              {title:"系统日志",url:"/Log"}
+            ]},
         ],
-        mainMenuActive:0,
-        mainMenu:[], //左侧导航菜单列表
         defaultActiveUrl:"",
         dialogUserVisible:false, //是否弹出个人信息
         userInfo:{},
@@ -119,6 +126,7 @@
           {color:"#1E222B",value:"1"},
           {color:"#0A9168",value:"2"},
         ],
+        breadList:[],
       }
     },
     mounted(){
@@ -141,13 +149,12 @@
       }else{
         this.$router.push("/login");
       }
+      this.getBreadcrumb()
       if(this.$route.path === "/home"){ //判断当前路由 设置当前路由对应的菜单
-        this.getMainMenu(this.systemOptions[0].mainMenu)
-        this.getsystemActive(0)
+        this.defaultActiveUrl = ""
       }else{
         this.systemOptions.forEach((menu,i) =>{
-          if(menu.label === this.$route.meta.type){
-            this.mainMenu = menu.mainMenu
+          if(menu.title === this.$route.meta.type){
             this.defaultActiveUrl = this.$route.path
           }
         })
@@ -160,6 +167,7 @@
       $route:{
         handler(val,oldval){
           this.defaultActiveUrl = val.path
+          this.getBreadcrumb();
         },
         deep: true,
       }
@@ -171,12 +179,6 @@
         }else{
           this.selfHeight.height = window.innerHeight - 360+'px';
         }
-      },
-      getMainMenu(data){ //从子组件选择的系统获取菜单
-        this.mainMenu = data
-      },
-      getsystemActive(data){ //从子组件选择的系统索引
-        this.systemActive = data
       },
       menuSelect(url,title){  //点击菜单跳转时  添加query参数避免相同路由跳转时报错
         this.$router.push({
@@ -227,7 +229,13 @@
           $("#app").attr('class','green-theme')
         }
       },
-
+      getBreadcrumb(){
+        if(this.$route.name != "home") {
+          this.breadList = [{ path: "/home", meta: { title: "首页" } }].concat(this.$route.matched);
+        }else{
+          this.breadList = [{ path: "/home",name:"home", meta: { title: "首页" } }]
+        }
+      },
     }
   }
 </script>

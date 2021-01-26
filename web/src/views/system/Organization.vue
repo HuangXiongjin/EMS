@@ -1,10 +1,7 @@
 <template>
   <el-row :gutter="10">
     <el-col :span="24">
-      <div class="page-title">
-        <i v-if="showTypeValue === '看板视图'" class="el-icon-share" style="color: #FB3A06"></i>
-        <i v-if="showTypeValue === '表格视图'" class="el-icon-s-grid" style="color: #FB3A06"></i>
-        <span style="margin-left: 10px;" class="text-size-normol">组织结构</span>
+      <div class="marginBottom">
         <el-radio-group v-model="showTypeValue" size="mini" class="page-title-radio" :border="false" fill="#00CAFA">
           <el-radio-button v-for="(item,index) in showType" :key="index" :label="item.label"></el-radio-button>
         </el-radio-group>

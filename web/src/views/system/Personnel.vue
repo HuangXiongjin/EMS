@@ -2,11 +2,6 @@
   <el-row>
     <el-col :span="24">
       <el-col :span="24">
-        <div class="page-title">
-          <span style="margin-left: 10px;" class="text-size-normol">人员管理</span>
-        </div>
-      </el-col>
-      <el-col :span="24">
         <div class="platformContainer">
           <tableView class="" :tableData="TableData" @getTableData="getTableData" @privileges="privileges" @teamGroup="teamGroup"></tableView>
         </div>
