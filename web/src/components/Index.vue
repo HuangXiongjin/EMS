@@ -102,6 +102,7 @@
         systemOptions:[
           {title: '设备管理',icon:"fa fa-archive",mainMenu:[
               {title:"设备台账",url:"/list"},
+              {title:"设备盘点",url:"/Inventory"},
             ]},
           {title: '系统管理',icon:"el-icon-s-tools",mainMenu:[
               {title:"组织架构",url:"/Organization"},

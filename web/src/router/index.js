@@ -14,8 +14,10 @@ import Log from '@/views/system/Log'
 import flowGraph from '@/views/system/flowGraph'
 import BuildTable from '@/views/system/BuildTable'
 
-// 设备
+// 设备管理
 import list from '@/views/Equipment/list'
+import EqDetails from '@/views/Equipment/EqDetails'
+import Inventory from '@/views/Equipment/Inventory'
 
 
 Vue.use(Router)
@@ -53,7 +55,10 @@ export default new Router({
       component: Index,
       redirect:'/home', //index主页默认加载home页面
       children:[
-        {path:'/list',name:'list',meta:{ title:'设备台账',type:"设备管理"},component:list},
+        {path:'/list',name:'list',meta:{ title:'设备台账',type:"设备管理"},component:list,children:[
+            {path:'/EqDetails',name:'EqDetails',meta:{ title:'设备详情'},component:EqDetails},
+          ]},
+        {path:'/Inventory',name:'Inventory',meta:{ title:'设备盘点',type:"设备管理"},component:Inventory},
       ]
     },
     {
