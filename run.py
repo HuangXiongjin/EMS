@@ -1,26 +1,33 @@
 import json
 
 from flask import Flask
-from flask_migrate import Migrate, MigrateCommand
-from flask_script import Manager
-from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
 
+from common.system_model import db_session, User
 from database.connect_db import CONNECT_DATABASE
+from system_backend.account_auth import login_auth
 
 app = Flask(__name__)
+
+# 初始化 LoginManager
+login_manager = LoginManager()
+# 设为'strong'侦测IP地址和user-agent信息有无异常，有异常就退出
+login_manager.session_protection = 'strong'
+# 设置没有登录的信息
+login_manager.login_message = False
+login_manager.init_app(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = CONNECT_DATABASE
 # 不跟踪修改，不设置会有警告
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-# 创建数据库连接对象
-db = SQLAlchemy(app)
+app.config['SECRET_KEY'] = '1qaz2wsx3edd45'
 
-# 绑定app和数据库，迁移使用
-migrate = Migrate(app, db)
+app.register_blueprint(login_auth)
 
-# 传输命令行参数
-manager = Manager(app)
-manager.add_command('db', MigrateCommand)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db_session.query(User).filter_by(ID=int(user_id)).first()
 
 
 @app.route('/', methods=['GET'])
@@ -29,7 +36,6 @@ def start():
 
 
 def main():
-    # manager.run()
     app.run()
 
 
