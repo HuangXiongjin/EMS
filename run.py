@@ -59,10 +59,6 @@ def load_user(user_id):
     return db_session.query(User).filter_by(ID=int(user_id)).first()
 
 
-def main():
-    app.run()
-
-
 @app.errorhandler(Exception)
 def error_handler(e):
     """
@@ -87,6 +83,10 @@ def error_handler(e):
     # db_session.commit()
     # db_session.close()
     return json.dumps({'code': '2000', '捕获异常详情': result}, cls=MyEncoder, ensure_ascii=False)
+
+
+def main():
+    app.run()
 
 
 if __name__ == '__main__':
