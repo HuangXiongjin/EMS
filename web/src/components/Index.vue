@@ -100,14 +100,47 @@
         menuIsCollapse: false, //左侧菜单栏是否缩进了
         sideIcon:'el-icon-arrow-left', //左侧菜单栏缩进点击切换图标
         systemOptions:[
-          {title: '设备管理',icon:"fa fa-archive",mainMenu:[
+          {title: '设备管理',icon:"el-icon-document",mainMenu:[
               {title:"设备台账",url:"/list"},
+              {title:"设备结构树",url:"/equipmentTree"},
               {title:"设备盘点",url:"/Inventory"},
+              {title:"设备折旧",url:"/depreciation"},
+              {title:"标签打印",url:"/labelPrinting"},
+              {title:"运行记录",url:"/runRecord"},
+            ]},
+          {title: '设备处置',icon:"fa fa-exchange",mainMenu:[
+              {title:"调拨转移",url:"/transfer"},
+              {title:"设备报废",url:"/scrap"},
+              {title:"设备变卖",url:"/sellOff"},
+              {title:"领用归还",url:"/receive"},
+            ]},
+          {title: '维修管理',icon:"fa fa-wrench",mainMenu:[
+              {title:"检修标准",url:"/maintainStandard"},
+              {title:"报修",url:"/repair"},
+              {title:"外委维修",url:"/Outsourced"},
+              {title:"检修计划",url:"/servicedPlan"},
+              {title:"检修任务",url:"/servicedTask"},
+            ]},
+          {title: '保养管理',icon:"fa fa-history",mainMenu:[
+              {title:"保养标准",url:"/upkeepStandard"},
+              {title:"保养计划",url:"/upkeepPlan"},
+              {title:"保养任务",url:"/upkeepTask"},
+            ]},
+          {title: '点检巡检',icon:"fa fa-compass",mainMenu:[
+              {title:"点巡检标准",url:"/inspectionStandard"},
+            ]},
+          {title: '备品备件',icon:"fa fa-archive",mainMenu:[
+
+            ]},
+          {title: '设备监控',icon:"el-icon-view",mainMenu:[
+
+            ]},
+          {title: '统计分析',icon:"fa fa-bar-chart",mainMenu:[
+
             ]},
           {title: '系统管理',icon:"el-icon-s-tools",mainMenu:[
               {title:"组织架构",url:"/Organization"},
-              {title:"企业管理",url:"/EnterpriseManagement"},
-              {title:"工厂管理",url:"/FactoryManagement"},
+              {title:"区域管理",url:"/FactoryManagement"},
               {title:"角色权限",url:"/Role"},
               {title:"班组管理",url:"/TeamGroup"},
               {title:"人员管理",url:"/Personnel"},
@@ -172,9 +205,9 @@
     methods:{
       getMenuHeight(){
         if(this.menuIsCollapse){
-          this.selfHeight.height = window.innerHeight - 490+'px';
+          this.selfHeight.height = window.innerHeight - 180+'px';
         }else{
-          this.selfHeight.height = window.innerHeight - 360+'px';
+          this.selfHeight.height = window.innerHeight - 180+'px';
         }
       },
       menuSelect(url,title){  //点击菜单跳转时  添加query参数避免相同路由跳转时报错
