@@ -7,7 +7,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 # from common.MESLogger import logger, insertSyslog
 from common.BSFramwork import AlchemyEncoder
-from common.system_model import Factory, DepartmentManager, Role, Permission, ModulMenus, User, RolePermission, \
+from common.system_model import DepartmentManager, Role, Permission, ModulMenus, User, RolePermission, \
     RoleUser
 from flask_login import current_user, LoginManager
 from common.system_model import db_session, engine, Base

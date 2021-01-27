@@ -7,20 +7,19 @@ import re
 from werkzeug.security import generate_password_hash
 import socket
 import datetime
-from common.system_model import User
+from common.system_model import User, engine, db_session
 # from common.MESLogger import MESLogger
 from common.system_model import User
 from database.connect_db import CONNECT_DATABASE
 
-engine = create_engine(CONNECT_DATABASE, max_overflow=0,  # 超过连接池大小外最多创建的连接
-                       pool_size=5,  # 连接池大小
-                       pool_timeout=30,  # 池中没有线程最多等待的时间，否则报错
-                       pool_recycle=-1,  # 多久之后对线程池中的线程进行一次连接的回收（重置）
-                       echo=True
-                       )
-conn = engine.connect()
+# engine = create_engine(CONNECT_DATABASE, max_overflow=0,  # 超过连接池大小外最多创建的连接
+#                        pool_size=5,  # 连接池大小
+#                        pool_timeout=30,  # 池中没有线程最多等待的时间，否则报错
+#                        pool_recycle=-1,  # 多久之后对线程池中的线程进行一次连接的回收（重置）
+#                        echo=True
+#                        )
+# conn = engine.connect()
 Session = sessionmaker(bind=engine)
-db_session = Session()
 
 from sqlalchemy import MetaData
 

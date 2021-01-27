@@ -6,11 +6,15 @@ import socket
 from flask import Flask, request
 from flask_login import LoginManager
 from flask_restful import Api, Resource
+from flask_migrate import Migrate, MigrateCommand
+from flask_script import Manager
+from flask_sqlalchemy import SQLAlchemy
 
 from common.common_cuid import select, update, delete, insert
 from common.system_model import db_session, User, RunLog
 from database.connect_db import CONNECT_DATABASE
 from system_backend.PermissionAssignment import permission_distribution
+from system_backend.Role_management import role_management
 from system_backend.account_auth import login_auth
 from system_backend.user_manage import user_manager
 from tools.handle import MyEncoder
@@ -29,12 +33,18 @@ app.config['SQLALCHEMY_DATABASE_URI'] = CONNECT_DATABASE
 # 不跟踪修改，不设置会有警告
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = '1qaz2wsx3edd45'
-
+db = SQLAlchemy(app)
 api = Api(app)
+
+from common.equipment_model import *
+migrate = Migrate(app, db)
+manager = Manager(app)
+manager.add_command('db', MigrateCommand)
 
 app.register_blueprint(login_auth)
 app.register_blueprint(permission_distribution)
 app.register_blueprint(user_manager)
+app.register_blueprint(role_management)
 
 
 class CUIDList(Resource):
@@ -87,6 +97,7 @@ def error_handler(e):
 
 def main():
     app.run()
+    # manager.run()
 
 
 if __name__ == '__main__':

@@ -402,20 +402,20 @@ class AreaMaintain(Base):
     FactoryName = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
 
 
-class Factory(Base):
-    __tablename__ = "Factory"
-
-    # ID:
-    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
-
-    # 所属企业:
-    EnterpriseName = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
-
-    # 厂名:
-    FactoryName = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
-
-    # 所在地区:
-    Region = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
+# class Factory(Base):
+#     __tablename__ = "Factory"
+#
+#     # ID:
+#     ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+#
+#     # 所属企业:
+#     EnterpriseName = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
+#
+#     # 厂名:
+#     FactoryName = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
+#
+#     # 所在地区:
+#     Region = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
 
 
 # class Station(Base):
