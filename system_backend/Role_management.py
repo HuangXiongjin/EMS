@@ -1,14 +1,17 @@
 import json
-from flask import render_template,request,Blueprint,redirect,url_for
+import re
+from flask import render_template, request, Blueprint, redirect, url_for
 from flask_login import LoginManager
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from common.MESLogger import logger,insertSyslog
+# from common.MESLogger import logger, insertSyslog
 from common.BSFramwork import AlchemyEncoder
-from common.system import Organization, Factory, DepartmentManager, Role, RoleUser, User
+from common.system_model import Factory, DepartmentManager, Role, Permission, ModulMenus, User, RolePermission, \
+    RoleUser
 from flask_login import current_user, LoginManager
-from common.Global import db_session, engine, Base
+from common.system_model import db_session, engine, Base
+
 login_manager = LoginManager()
 
 role_management = Blueprint('role_management', __name__, template_folder='templates')
@@ -45,8 +48,8 @@ def saveroleuser():
         except Exception as e:
             db_session.rollback()
             print(e)
-            logger.error(e)
-            insertSyslog("error", "用户添加角色Error：" + str(e), current_user.Name)
+            # logger.error(e)
+            # insertSyslog("error", "用户添加角色Error：" + str(e), current_user.Name)
 
 @role_management.route('/role_management/selectrolebyuser', methods=['POST', 'GET'])
 def selectrolebyuser():
@@ -73,5 +76,5 @@ def selectrolebyuser():
             return json.dumps(dir, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
-            logger.error(e)
-            insertSyslog("error", "根据用户查询角色Error：" + str(e), current_user.Name)
+            # logger.error(e)
+            # insertSyslog("error", "根据用户查询角色Error：" + str(e), current_user.Name)
