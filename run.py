@@ -71,13 +71,13 @@ def error_handler(e):
     """
     db_session.rollback()
     re_path = request.path
-    re_func = request.url_rule.endpoint
-    # re_func = request.url_rule.endpoint.split('.')[1]
+    # re_func = request.url_rule.endpoint
+    re_func = request.url_rule.endpoint.split('.')[1]
     re_method = request.method
     root_path = os.path.abspath(os.path.dirname(__file__))
     now_date = datetime.datetime.now().strftime('%Y%m%d')
     now_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    file_path = os.path.join(root_path, f'logs\\{now_date}.txt')
+    # file_path = os.path.join(root_path, f'logs\\{now_date}.txt')
     ip = socket.gethostbyname(socket.gethostname())
     result = f"{now_time} -- {ip} -- {re_path} -- {re_func} -- {re_method} -- {str(e)} \n"
     print(result)
@@ -86,7 +86,7 @@ def error_handler(e):
     # db_session.add(RunLog(OperateTime=now_time, IP=ip, User='user', Path=re_path, Func=re_func, Method=re_method, Error=str(e)))
     # db_session.commit()
     # db_session.close()
-    return json.dumps({'code': '2000', 'msg': result}, cls=MyEncoder, ensure_ascii=False)
+    return json.dumps({'code': '2000', '捕获异常详情': result}, cls=MyEncoder, ensure_ascii=False)
 
 
 if __name__ == '__main__':
