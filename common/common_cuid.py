@@ -88,7 +88,7 @@ def insert(data):
             # aud.ReviseDate = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             # aud.User = current_user.Name
             # db_session.add(aud)
-            # db_session.commit()
+            db_session.commit()
             db_session.close()
             return {"code": "200", "message": "添加成功"}
         except Exception as e:
@@ -121,8 +121,8 @@ def delete(data):
                     # aud.ReviseDate = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     # aud.User = current_user.Name
                     # db_session.add(aud)
-                    # db_session.commit()
-                    # db_session.close()
+                    db_session.commit()
+                    db_session.close()
                 except Exception as ee:
                     print(ee)
                     db_session.rollback()
@@ -170,7 +170,7 @@ def update(data):
                 # aud.ReviseDate = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 # aud.User = current_user.Name
                 # db_session.add(aud)
-                # db_session.commit()
+                db_session.commit()
                 db_session.close()
                 return {"code": "200", "message": "修改成功"}
             else:
