@@ -19,7 +19,7 @@ login_auth = Blueprint('login_auth', __name__, template_folder='templates')
 def login():
     '''
     用户登陆认证
-    :return:
+    :return: 返回登录信息
     '''
     try:
         if request.method == 'POST':
@@ -37,8 +37,13 @@ def login():
             else:
                 return json.dumps({"code": "2000", "message": "用户名密码错误"}, ensure_ascii=False)
     except Exception as e:
-        print(e)
         db_session.rollback()
         # logger.error(e)
         return json.dumps([{"status": "Error:" + str(e)}], cls=MyEncoder, ensure_ascii=False)
 
+
+@login_auth.route('/index', methods=['GET'])
+def start():
+    a = db_session.query(G).all()
+    return a
+    # return 'This EMS!'

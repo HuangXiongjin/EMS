@@ -19,6 +19,6 @@ REDIS_HOST = config['REDIS']['HOST']
 REDIS_TABLENAME = config['REDIS']['REDIS_TABLENAME']
 REDIS_PASSWORD = config['REDIS']['REDIS_PASSWORD']
 
-CONNECT_DATABASE = f"mysql+pymysql://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DB_NAME}?charset=utf8"
+CONNECT_DATABASE = f"mysql+pymysql://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DB_NAME}?charset=utf8&autocommit=true"
 # CONNECT_DATABASE = f"mysql+pymysql://sa:1qaz2wsx@localhost:1433/EMS?charset=utf8"
 # conn = pymssql.connect(user='sa', host='127.0.0.1', port='1433', password='1qaz2wsx', charset='utf8')
