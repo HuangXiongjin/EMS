@@ -1,9 +1,16 @@
 <template>
   <el-container class="body-container">
     <!-- 头部 -->
-    <el-header class="body-head">
+    <el-header class="body-head" :style="{ background: themeColor }">
       <div class="head-menu floatLeft">
-        <router-link to='/home'><span class="head-title">智能设备管理系统</span></router-link>
+        <router-link to='/home' style="display: block;height: 100%;">
+          <el-image style="width: 80px;height: calc(100% - 18px);margin-top: 10px;transition: all 0.3s ease-out;" :src="require('../assets/logo.png')"></el-image>
+        </router-link>
+      </div>
+      <div class="head-menu floatLeft marginLeft">
+        <router-link to='/home'>
+          <span class="head-title text-size-20">智能设备管理系统</span>
+        </router-link>
       </div>
       <div class="head-menu floatRight">
         <ul>
@@ -15,9 +22,7 @@
           <li>
             <el-tooltip class="head-menu-item" effect="light" placement="bottom">
               <div slot="content">
-                <ul>
-                  <li class="themeItem" v-for="(item,index) in themeList" :class="{ active:item.value===themeValue }" :key="index" :style="{background:item.color}" @click="changeTheme(item.value)"></li>
-                </ul>
+                <el-color-picker v-model="themeColor" @change="changeTheme"></el-color-picker>
               </div>
               <i class="el-icon-brush"></i>
             </el-tooltip>
@@ -53,18 +58,18 @@
         <el-row>
           <el-col :span="24">
             <div :style="selfHeight" class="aside-menu">
-            <el-menu class="menu-ul" :default-active="defaultActiveUrl" :collapse="menuIsCollapse" :router="true" @select="menuSelect">
-              <template v-for="item in systemOptions" :index="item.url">
-                <el-menu-item v-if="!item.mainMenu" :index="item.url"><i :class="item.icon"></i><span slot="title">{{ item.title }}</span></el-menu-item>
-                <el-submenu v-if="item.mainMenu" :index="item.title">
-                  <template slot="title"><i :class="item.icon"></i><span>{{ item.title }}</span></template>
-                  <el-menu-item v-for="(child,childIndex) in item.mainMenu" :key="childIndex" :index="child.url"><span style="margin-left:10px;">{{child.title}}</span></el-menu-item>
-                </el-submenu>
-              </template>
-            </el-menu>
-          </div>
+              <el-menu class="menu-ul" :default-active="defaultActiveUrl" :collapse="menuIsCollapse" :router="true" @select="menuSelect" :active-text-color="themeColor">
+                <template v-for="item in systemOptions" :index="item.url">
+                  <el-menu-item v-if="!item.mainMenu" :index="item.url"><i :class="item.icon"></i><span slot="title">{{ item.title }}</span></el-menu-item>
+                  <el-submenu v-if="item.mainMenu" :index="item.title">
+                    <template slot="title"><i :class="item.icon"></i><span>{{ item.title }}</span></template>
+                    <el-menu-item v-for="(child,childIndex) in item.mainMenu" :key="childIndex" :index="child.url"><span style="margin-left:10px;">{{child.title}}</span></el-menu-item>
+                  </el-submenu>
+                </template>
+              </el-menu>
+            </div>
             <div class="aside-foot">
-              <el-button :icon="sideIcon" size="mini" circle @click="iconToggle"></el-button>
+              <el-button :icon="sideIcon" size="mini" circle @click="iconToggle" :style="{ background: themeColor }"></el-button>
             </div>
           </el-col>
         </el-row>
@@ -168,21 +173,15 @@
         dialogUserVisible:false, //是否弹出个人信息
         userInfo:{},
         isFullScreen:false, //是否全屏
-        themeValue:"0",
-        themeList:[
-          {color:"#ffffff",value:"0"},
-          {color:"#4881e6",value:"1"},
-        ],
+        themeColor:"",
         breadList:[],
       }
     },
     mounted(){
-      if(localStorage.getItem('theme') === "1"){
-        this.themeValue = "1"
-        $("#app").attr('class','blue-theme')
+      if(localStorage.getItem('theme')){
+        this.themeColor = localStorage.getItem('theme')
       }else{
-        this.themeValue = "0"
-        $("#app").attr('class','white-theme')
+        this.themeColor = "#4881e6"
       }
     },
     created(){
@@ -263,13 +262,8 @@
         }
       },
       changeTheme(value){
-        this.themeValue = value
+        this.themeColor = value
         localStorage.setItem('theme', value);
-        if(value === "0"){
-          $("#app").attr('class','white-theme')
-        }else if(value === "1"){
-          $("#app").attr('class','blue-theme')
-        }
       },
       getBreadcrumb(){
         if(this.$route.name != "home") {
@@ -281,6 +275,6 @@
     }
   }
 </script>
-<style lang="less">
+<style lang="less" scoped>
 
 </style>
