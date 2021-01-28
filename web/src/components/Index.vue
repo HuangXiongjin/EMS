@@ -128,15 +128,29 @@
             ]},
           {title: '点检巡检',icon:"fa fa-compass",mainMenu:[
               {title:"点巡检标准",url:"/inspectionStandard"},
+              {title:"点检项",url:"/pointInspection"},
+              {title:"点检记录",url:"/pointInspectionLog"},
+              {title:"巡检计划",url:"/patrolPlan"},
+              {title:"巡检任务",url:"/patrolTask"},
             ]},
           {title: '备品备件',icon:"fa fa-archive",mainMenu:[
-
+              {title:"备件台账",url:"/partsList"},
+              {title:"备件领用",url:"/partsReceive"},
+              {title:"出库管理",url:"/warehouseOut"},
+              {title:"入库管理",url:"/warehouseEnter"},
+              {title:"库存盘点",url:"/stockTaking"},
             ]},
           {title: '设备监控',icon:"el-icon-view",mainMenu:[
-
+              {title:"实时数据",url:"/realTimeData"},
+              {title:"数据报表",url:"/dataReport"},
             ]},
           {title: '统计分析',icon:"fa fa-bar-chart",mainMenu:[
-
+              {title:"设备统计",url:"/EquipmentStatistics"},
+              {title:"保养统计",url:"/upkeepStatistics"},
+              {title:"维修统计",url:"/maintainStatistics"},
+              {title:"点检统计",url:"/examineStatistics"},
+              {title:"库存统计",url:"/warehouseStatistics"},
+              {title:"运行统计",url:"/runingStatistics"},
             ]},
           {title: '系统管理',icon:"el-icon-s-tools",mainMenu:[
               {title:"组织架构",url:"/Organization"},
@@ -157,7 +171,7 @@
         themeValue:"0",
         themeList:[
           {color:"#ffffff",value:"0"},
-          {color:"#0A9168",value:"1"},
+          {color:"#4881e6",value:"1"},
         ],
         breadList:[],
       }
@@ -165,7 +179,7 @@
     mounted(){
       if(localStorage.getItem('theme') === "1"){
         this.themeValue = "1"
-        $("#app").attr('class','green-theme')
+        $("#app").attr('class','blue-theme')
       }else{
         this.themeValue = "0"
         $("#app").attr('class','white-theme')
@@ -254,7 +268,7 @@
         if(value === "0"){
           $("#app").attr('class','white-theme')
         }else if(value === "1"){
-          $("#app").attr('class','green-theme')
+          $("#app").attr('class','blue-theme')
         }
       },
       getBreadcrumb(){

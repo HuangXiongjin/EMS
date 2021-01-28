@@ -42,7 +42,29 @@ import upkeepTask from '@/views/upkeep/upkeepTask'
 
 //点检巡检
 import inspectionStandard from '@/views/inspection/inspectionStandard'
+import pointInspection from '@/views/inspection/pointInspection'
+import pointInspectionLog from '@/views/inspection/pointInspectionLog'
+import patrolPlan from '@/views/inspection/patrolPlan'
+import patrolTask from '@/views/inspection/patrolTask'
 
+//备品备件
+import partsList from '@/views/spareParts/partsList'
+import partsReceive from '@/views/spareParts/partsReceive'
+import warehouseOut from '@/views/spareParts/warehouseOut'
+import warehouseEnter from '@/views/spareParts/warehouseEnter'
+import stockTaking from '@/views/spareParts/stockTaking'
+
+//设备监控
+import realTimeData from '@/views/monitoring/realTimeData'
+import dataReport from '@/views/monitoring/dataReport'
+
+//统计分析
+import EquipmentStatistics from '@/views/statistics/EquipmentStatistics'
+import upkeepStatistics from '@/views/statistics/upkeepStatistics'
+import maintainStatistics from '@/views/statistics/maintainStatistics'
+import examineStatistics from '@/views/statistics/examineStatistics'
+import warehouseStatistics from '@/views/statistics/warehouseStatistics'
+import runingStatistics from '@/views/statistics/runingStatistics'
 
 Vue.use(Router)
 const originalPush = Router.prototype.push
@@ -135,6 +157,50 @@ export default new Router({
       redirect:'/home',
       children:[
         {path:'/inspectionStandard',name:'inspectionStandard',meta:{ title:'点巡检标准',type:"点检巡检"},component:inspectionStandard},
+        {path:'/pointInspection',name:'pointInspection',meta:{ title:'点检项',type:"点检巡检"},component:pointInspection},
+        {path:'/pointInspectionLog',name:'pointInspectionLog',meta:{ title:'点检记录',type:"点检巡检"},component:pointInspectionLog},
+        {path:'/patrolPlan',name:'patrolPlan',meta:{ title:'巡检计划',type:"点检巡检"},component:patrolPlan},
+        {path:'/patrolTask',name:'patrolTask',meta:{ title:'巡检任务',type:"点检巡检"},component:patrolTask},
+      ]
+    },
+    {
+      path: '/',
+      name: 'Index',
+      meta:{ title:'备品备件' },
+      component: Index,
+      redirect:'/home',
+      children:[
+        {path:'/partsList',name:'partsList',meta:{ title:'备件台账',type:"备品备件"},component:partsList},
+        {path:'/partsReceive',name:'partsReceive',meta:{ title:'备件领用',type:"备品备件"},component:partsReceive},
+        {path:'/warehouseOut',name:'warehouseOut',meta:{ title:'出库管理',type:"备品备件"},component:warehouseOut},
+        {path:'/warehouseEnter',name:'warehouseEnter',meta:{ title:'入库管理',type:"备品备件"},component:warehouseEnter},
+        {path:'/stockTaking',name:'stockTaking',meta:{ title:'库存盘点',type:"备品备件"},component:stockTaking},
+      ]
+    },
+    {
+      path: '/',
+      name: 'Index',
+      meta:{ title:'设备监控' },
+      component: Index,
+      redirect:'/home',
+      children:[
+        {path:'/realTimeData',name:'realTimeData',meta:{ title:'实时数据',type:"设备监控"},component:realTimeData},
+        {path:'/dataReport',name:'dataReport',meta:{ title:'数据报表',type:"设备监控"},component:dataReport},
+      ]
+    },
+    {
+      path: '/',
+      name: 'Index',
+      meta:{ title:'统计分析' },
+      component: Index,
+      redirect:'/home',
+      children:[
+        {path:'/EquipmentStatistics',name:'EquipmentStatistics',meta:{ title:'设备统计',type:"统计分析"},component:EquipmentStatistics},
+        {path:'/upkeepStatistics',name:'upkeepStatistics',meta:{ title:'保养统计',type:"统计分析"},component:upkeepStatistics},
+        {path:'/maintainStatistics',name:'maintainStatistics',meta:{ title:'维修统计',type:"统计分析"},component:maintainStatistics},
+        {path:'/examineStatistics',name:'examineStatistics',meta:{ title:'维修统计',type:"统计分析"},component:examineStatistics},
+        {path:'/warehouseStatistics',name:'warehouseStatistics',meta:{ title:'库存统计',type:"统计分析"},component:warehouseStatistics},
+        {path:'/runingStatistics',name:'runingStatistics',meta:{ title:'运行统计',type:"统计分析"},component:runingStatistics},
       ]
     },
     {
