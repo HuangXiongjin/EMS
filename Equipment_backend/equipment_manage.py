@@ -56,9 +56,11 @@ def generate_qrcode():
     qr_name = request.values.get('EquipmentCode')
     root_path = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
     file_path = os.path.join(root_path, 'picture')
-    myqr.run(words="http://www.baidu.com/", save_name=f'{qr_name}.png', save_dir=file_path)
+    # gif_path = os.path.join(root_path, 'picture\\niu.gif')
+    myqr.run(words="http://www.baidu.com/", colorized=True, save_name=f'{qr_name}.png', save_dir=file_path)
     query_data = db_session.query(Equipment).filter_by(EquipmentCode=qr_name).first()
     file_path2 = os.path.join(root_path, f'picture\\{qr_name}.png')
+    # file_path2 = os.path.join(root_path, f'picture\\TQ1001.png')
     data = return_img_stream(file_path2)
     query_data.QRCode = data
     db_session.commit()
