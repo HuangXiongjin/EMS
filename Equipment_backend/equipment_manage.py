@@ -43,7 +43,7 @@ def equipment_tree():
             # parent_tag2 = set(item.ParentTag for item in query_data)
             i += 1
             for data in query_data:
-                rank2_data = {"id": data.EquipmentCode, "label": data.EquipmentName}
+                rank2_data = {"id": data.EquipmentCode, "label": data.EquipmentName, "type": "设备"}
                 children2.append(rank2_data)
             children.append(children1)
         tree = [{"label": factory.AreaName, "children": children}]
