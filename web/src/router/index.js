@@ -12,9 +12,12 @@ import Permission from '@/views/system/Permission'
 import Log from '@/views/system/Log'
 import flowGraph from '@/views/system/flowGraph'
 import BuildTable from '@/views/system/BuildTable'
+//移动端界面
+import mobileEquipmentDetails from '@/views/mobile/mobileEquipmentDetails'
 
 // 设备管理
 import list from '@/views/Equipment/list'
+import EquipmentDetails from '@/views/Equipment/EquipmentDetails'
 import equipmentTree from '@/views/Equipment/equipmentTree'
 import Inventory from '@/views/Equipment/Inventory'
 import depreciation from '@/views/Equipment/depreciation'
@@ -101,7 +104,7 @@ export default new Router({
       redirect:'/home', //index主页默认加载home页面
       children:[
         {path:'/list',name:'list',meta:{ title:'设备台账',type:"设备管理"},component:list,children:[
-            // {path:'/EqDetails',name:'EqDetails',meta:{ title:'设备详情'},component:EqDetails},
+            {path:'/EquipmentDetails',name:'EquipmentDetails',meta:{ title:'设备详情'},component:EquipmentDetails},
           ]},
         {path:'/equipmentTree',name:'equipmentTree',meta:{ title:'设备结构树',type:"设备管理"},component:equipmentTree},
         {path:'/Inventory',name:'Inventory',meta:{ title:'设备盘点',type:"设备管理"},component:Inventory},
@@ -202,6 +205,11 @@ export default new Router({
         {path:'/warehouseStatistics',name:'warehouseStatistics',meta:{ title:'库存统计',type:"统计分析"},component:warehouseStatistics},
         {path:'/runingStatistics',name:'runingStatistics',meta:{ title:'运行统计',type:"统计分析"},component:runingStatistics},
       ]
+    },
+    {
+      path: '/mobileEquipmentDetails',
+      name: 'mobileEquipmentDetails',
+      component: mobileEquipmentDetails,
     },
     {
       path: '/login',

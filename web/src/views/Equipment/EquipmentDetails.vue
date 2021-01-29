@@ -1,13 +1,8 @@
 <template>
-  <el-row :gutter="15">
-    <el-col :span="6">
-      <el-card shadow="never">
-        <div slot="header" class="text-size-14">设备结构树</div>
-        <el-tree :data="treeData" :props="defaultProps" accordion @node-click="handleNodeClick"></el-tree>
-      </el-card>
-    </el-col>
-    <el-col :span="18">
-      <div class="platformContainer" v-if="showEquipmentData">
+  <el-row>
+    <el-col :span="24">
+      <el-button class="marginBottom" size="mini" @click="returnList">返回列表</el-button>
+      <div class="platformContainer">
         <span>基本信息</span>
         <el-image class="floatRight marginBottom" v-if="EquipmentData.QRCode" style="width: 50px;height: 50px;" :src="'data:;base64,'+EquipmentData.QRCode" :preview-src-list="('data:;base64,'+EquipmentData.QRCode).split() "></el-image>
         <table class="elementTable text-size-14">
@@ -99,27 +94,27 @@
 
 <script>
   export default {
-    name: "equipmentTree",
+    name: "EquipmentDetails",
     data(){
-      return {
-        treeData:[],
-        defaultProps: {
-          children: 'children',
-          label: 'label'
-        },
-        EquipmentData:{},
-        showEquipmentData:false
+      return{
+        EquipmentData:{}
       }
     },
     mounted(){
-      this.getTree()
+      this.getTableData()
     },
     methods:{
-      getTree(){
+      getTableData(){
         var that = this
-        this.axios.get("/api/EquipmentTree").then(res => {
-          if(res.data.code === "1000"){
-            this.treeData = res.data.data
+        var params = {
+          tableName: "Equipment",
+          EquipmentCode:this.$store.state.EquipmentCode,
+        }
+        this.axios.get("/api/CUID",{
+          params: params
+        }).then(res => {
+          if(res.data.code === "200"){
+            this.EquipmentData = res.data.data.rows[0]
           }else{
             that.$message({
               type: 'info',
@@ -128,27 +123,8 @@
           }
         })
       },
-      handleNodeClick(data){
-        if(data.type === "设备"){
-          var that = this
-          var params = {
-            tableName: "Equipment",
-            EquipmentCode:data.id,
-          }
-          this.axios.get("/api/CUID",{
-            params: params
-          }).then(res => {
-            if(res.data.code === "200"){
-              this.EquipmentData = res.data.data.rows[0]
-              this.showEquipmentData = true
-            }else{
-              that.$message({
-                type: 'info',
-                message: res.data.message
-              });
-            }
-          })
-        }
+      returnList(){
+        this.$router.push("/list")
       }
     }
   }
