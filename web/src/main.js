@@ -19,6 +19,9 @@ Vue.config.productionTip = false
 Vue.prototype.axios = axios
 Vue.prototype.qs = qs
 Vue.use(VCharts)
+import Mint from 'mint-ui';
+import 'mint-ui/lib/style.css';
+Vue.use(Mint);
 
 Vue.config.productionTip = false
 Vue.component(CollapseTransition.name, CollapseTransition)

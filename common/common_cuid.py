@@ -19,7 +19,7 @@ from database.connect_db import CONNECT_DATABASE
 #                        echo=True
 #                        )
 # conn = engine.connect()
-Session = sessionmaker(bind=engine)
+# Session = sessionmaker(bind=engine)
 
 from sqlalchemy import MetaData
 

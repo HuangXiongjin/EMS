@@ -185,6 +185,7 @@
       }
     },
     created(){
+      document.title = "智能设备管理系统"
       window.addEventListener('resize', this.getMenuHeight);
       this.getMenuHeight()
       if(sessionStorage.getItem("LoginStatus")) {

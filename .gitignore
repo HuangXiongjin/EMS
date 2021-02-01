@@ -1,3 +1,4 @@
+picture
 database/config_db.ini
 limsenv
 .qiniu_pythonsdk_hostscache.json
@@ -152,7 +153,6 @@ __pycache__/
 .Python
 # build/
 develop-eggs/
-dist/
 logs/
 downloads/
 eggs/

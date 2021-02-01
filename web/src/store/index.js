@@ -7,7 +7,8 @@ export default new Vuex.Store({
   state: {
     WorkNumber:null,
     UserName:null,
-    LoginStatus: false
+    LoginStatus: false,
+    EquipmentCode:null
   },
   // 创建改变状态的方法
   mutations: {
@@ -44,6 +45,9 @@ export default new Vuex.Store({
       sessionStorage.removeItem('UserName')
       sessionStorage.removeItem('Permissions')
       sessionStorage.removeItem('LastLoginTime')
+    },
+    setEquipmentCode(state,data){
+      state.EquipmentCode = data;
     }
   },
   actions: {},
