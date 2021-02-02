@@ -22,7 +22,7 @@
           <li>
             <el-tooltip class="head-menu-item" effect="light" placement="bottom">
               <div slot="content">
-                <el-color-picker v-model="themeColor" @change="changeTheme"></el-color-picker>
+                <el-color-picker v-model="themeColor" @active-change="changeTheme"></el-color-picker>
               </div>
               <i class="el-icon-brush"></i>
             </el-tooltip>
@@ -164,7 +164,7 @@
               {title:"班组管理",url:"/TeamGroup"},
               {title:"人员管理",url:"/Personnel"},
               {title:"权限维护",url:"/Permission"},
-              {title:"流程管理",url:"/flowGraph"},
+              {title:"工作流管理",url:"/flowGraph"},
               {title:"可视化建表",url:"/BuildTable"},
               {title:"系统日志",url:"/Log"}
             ]},

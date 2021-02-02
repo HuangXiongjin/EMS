@@ -4,25 +4,22 @@
       <el-row :gutter="20">
         <el-col :span="24">
           <div class="cardContainer">
-            <el-col :span="6" v-for="(item,index) in FlowData" :key="index">
+            <el-col :span="4" v-for="(item,index) in FlowData" :key="index">
               <div class="colItemContainer text-center">
                 <div @click="toG6(item)" :class="{'color-lightgreen':item.ProcessName===selectRow.ProcessName}">
-                  <p class="marginBottom-10 text-size-48"><i :class="item.Icon"></i></p>
+                  <p class="marginBottom-10 text-size-36"><i :class="item.Icon"></i></p>
                   <p class="text-size-16">{{ item.ProcessName }}</p>
                 </div>
               </div>
             </el-col>
-            <el-col :span="6">
+            <el-col :span="4">
               <div class="colItemContainer text-center">
-                <p class="marginBottom marginTop text-size-48" @click="addFlow"><i class="el-icon-circle-plus-outline"></i></p>
+                <p class="marginBottom marginTop text-size-36" @click="addFlow"><i class="el-icon-circle-plus-outline"></i></p>
               </div>
               <el-dialog title="添加流程" :visible.sync="dialogVisible" width="50%" :append-to-body="true">
                 <el-form :model="formParameters" label-width="110px">
                   <el-form-item label="流程名称" >
                     <el-input v-model="formParameters.ProcessName"></el-input>
-                  </el-form-item>
-                  <el-form-item label="展示图标" >
-                    <el-input v-model="formParameters.Icon"></el-input>
                   </el-form-item>
                 </el-form>
                 <span slot="footer" class="dialog-footer">
@@ -52,12 +49,12 @@
                   draggable="true"
                   @dragstart="onDragstart($event)"
                   @dragend="onDragend($event)">
-                  {{item.label}}
+                  <span>{{item.label}}</span>
                 </div>
               </div>
             </el-form-item>
             <el-form-item>
-              <el-button @click="saveFlow" size="small">保存流程结构</el-button>
+              <el-button type="success" @click="saveFlow" size="small">保存流程结构</el-button>
             </el-form-item>
             <el-form-item>
               <el-button type="danger" @click="delFlow" size="mini">删除流程</el-button>
@@ -82,6 +79,9 @@
                   <el-form-item label="节点名称">
                     <el-input size="small" v-model="clickModel.label" @change="changeNode"></el-input>
                   </el-form-item>
+                  <el-form-item label="驳回类型" v-if="showRefuseType">
+
+                  </el-form-item>
                 </el-form>
                 </div>
             </el-col>
@@ -105,7 +105,6 @@
         dialogVisible:false,
         formParameters:{
           ProcessName:"",
-          Icon:""
         },
         selectRow:"",
         selectFlowData:"",
@@ -120,12 +119,15 @@
         clickNode:{},
         clickModel:{},
         group:[
-          {label:"圆形",class:"circleNode",type:"circle"},
-          {label:"矩形",class:"rectNode",type:"rect"},
-          {label:"菱形",class:"diamondNode",type:"diamond"},
-          {label:"三角形",class:"triangleNode",type:"triangle"},
+          {label:"开始阶段",class:"startNode",type:"ellipse"},
+          {label:"业务阶段",class:"rectNode",type:"rect"},
+          {label:"待定",class:"diamondNode",type:"diamond"},
+          {label:"驳回",class:"triangleNode",type:"triangle"},
+          {label:"结束",class:"circleNode",type:"circle"},
         ],
         nodeType:"", //存拖动的元素类型
+        showRefuseType:false, // 是否显示驳回类型
+        RefuseType:"", //
       }
     },
     mounted() {
@@ -152,14 +154,11 @@
         this.dialogVisible = true
       },
       saveAddFlow(){
-        if(this.formParameters.ProcessName != ""){
-          if(this.formParameters.Icon === ''){
-            this.formParameters.Icon = "el-icon-share"
-          }
+        if(this.formParameters.ProcessName){
           var params = {
             tableName:this.FlowtableName,
             ProcessName:this.formParameters.ProcessName,
-            Icon:this.formParameters.Icon,
+            Icon:"fa fa-code-fork"
           }
           this.axios.post("/api/CUID",this.qs.stringify(params)).then(res =>{
             if(res.data.code === "200"){
@@ -190,8 +189,9 @@
         this.selectFlowData = {}
         this.FlowData.forEach(item =>{
           if(item.ProcessName === label.ProcessName){
-            if(item.ProcessStructure != 'None'){
+            if(item.ProcessStructure){
               this.selectFlowData = JSON.parse(item.ProcessStructure)
+              console.log(this.selectFlowData)
             }else{
               this.selectFlowData = {}
             }
@@ -202,11 +202,30 @@
         }
         this.init()
       },
+      unique(arr){ //去除数组中 source和target相同的对象 （重复连接线）
+        let newArr = [arr[0]];
+        for(var i = 0; i < arr.length; i++){  //循环遍历当前数组
+          let repeat = false;
+          for (let j = 0; j < newArr.length; j++) {
+            if (arr[i].source === newArr[j].source && arr[i].target === newArr[j].target) {
+              repeat = true;
+              break;
+            }
+          }
+          if (!repeat) {
+            newArr.push(arr[i]);
+          }
+        }
+        return newArr;
+      },
       saveFlow(){
+        var ProcessStructure = this.graph.save()
+        var uniqueEdges = this.unique(ProcessStructure.edges)
+        ProcessStructure.edges = uniqueEdges
         var params = {
           tableName:this.FlowtableName,
           ID:this.selectRow.ID,
-          ProcessStructure:JSON.stringify(this.graph.save())
+          ProcessStructure:JSON.stringify(ProcessStructure)
         }
         this.axios.put("/api/CUID",this.qs.stringify(params)).then(res => {
           if (res.data.code === "200") {
@@ -269,7 +288,6 @@
               const shape = group.get('children')[0];
               // the start position of the edge's path
               const startPoint = shape.getPoint(0);
-
               // add red circle shape
               const circle = group.addShape('circle', {
                 attrs: {
@@ -300,40 +318,41 @@
             },
           },'line');
           //点击节点添加连接线
-          // Register a custom behavior: click two end nodes to add an edge
+          // 注册自定义行为:单击两个结束节点添加边缘
           G6.registerBehavior('click-add-edge', {
-            // Set the events and the corresponding responsing function for this behavior
+            // 为该行为设置事件和相应的响应函数
             getEvents() {
               return {
-                'node:click': 'onClick', // The event is canvas:click, the responsing function is onClick
-                mousemove: 'onMousemove', // The event is mousemove, the responsing function is onMousemove
-                'edge:click': 'onEdgeClick', // The event is edge:click, the responsing function is onEdgeClick
+                'node:click': 'onClick', // 事件是canvas:click，响应函数是onClick
+                mousemove: 'onMousemove', // 事件是mousemove，响应函数是onMousemove
+                'edge:click': 'onEdgeClick', // 事件为edge:click，响应函数为onEdgeClick
               };
             },
-            // The responsing function for node:click defined in getEvents
             onClick(ev) {
               const self = this;
               const node = ev.item;
               const graph = self.graph;
-              // The position where the mouse clicks
+              // 鼠标点击的位置
               const point = { x: ev.x, y: ev.y };
               const model = node.getModel();
-              if (self.addingEdge && self.edge) {
+              var isclick = false
+              if (self.addingEdge && self.edge) { //第一次点击
                 graph.updateItem(self.edge, {
                   target: model.id,
                 });
                 self.edge = null;
                 self.addingEdge = false;
-              } else {
-                // Add anew edge, the end node is the current node user clicks
+              } else {  //第二次点击 添加新的连接线，结束节点是用户单击的当前节点
                 self.edge = graph.addItem('edge', {
+                  id:Date.now().toString(),
+                  shape:"polyline",
                   source: model.id,
                   target: model.id,
                 },true);
                 self.addingEdge = true;
               }
             },
-            // The responsing function for mousemove defined in getEvents
+            // 在getEvents中定义的mousemove的响应函数
             onMousemove(ev) {
               const self = this;
               // The current position the mouse clicks
@@ -407,11 +426,12 @@
                 }
                 return 50;
               },
+              rankdir: 'LR',
               ranksep: 70,
               controlPoints: true
             },
             defaultNode: {
-              size: [160, 80],
+              size: [150, 80],
               style: {
                 fill: '#9EC9FF',
                 stroke: '#5B8FF9',
@@ -430,6 +450,8 @@
                 endArrow: {
                   path: G6.Arrow.vee(10,20,40)
                 },
+                radius:10,
+                offset:30,
                 lineWidth: 2,
                 stroke: '#000',
               },
@@ -442,7 +464,6 @@
             },
             fitView: true,
           });
-
           that.graph.read(that.selectFlowData);
           that.graph.on('node:click', evt => {
             const {item, target} = evt
@@ -451,6 +472,11 @@
             if(targetType === 'text' || targetType === 'rect' || targetType === 'path' || targetType === 'circle'){
               that.clickNode = evt.item
               that.clickModel = evt.item.getModel()
+              if(that.clickModel.type === "triangle"){
+                that.showRefuseType = true
+              }else{
+                that.showRefuseType = false
+              }
             }
           })
         })
@@ -485,12 +511,13 @@
         //console.log(e)
       },
       onDrop(e){  //在画布内松开鼠标 添加节点
+        console.log(this.nodeType)
         if(this.nodeType === "triangle"){
           this.graph.addItem('node', {
             x: e.offsetX,
             y: e.offsetY,
             id: Date.now().toString(), // Generate the unique id
-            label:"node",
+            label:"驳回",
             type:this.nodeType,
             size:[80,80]
           },true);
@@ -499,7 +526,7 @@
             x: e.offsetX,
             y: e.offsetY,
             id: Date.now().toString(), // Generate the unique id
-            label:"node",
+            label:"业务阶段",
             type:this.nodeType,
           },true);
         }
@@ -509,6 +536,18 @@
 </script>
 
 <style scoped>
+  .startNode{
+    display: inline-block;
+    margin-right: 20px;
+    width: 70px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    border: 1px solid #5B8FF9;
+    background: #9EC9FF;
+    border-radius: 50%;
+    cursor: pointer;
+  }
   .circleNode{
     display: inline-block;
     margin-right: 20px;
@@ -551,11 +590,15 @@
     margin-right: 20px;
     width: 0;
     height: 0;
-    border-width: 0 40px 40px;
+    line-height: 60px;
+    border-width: 0 40px 50px;
     border-style: solid;
     border-color: transparent transparent #9EC9FF;
     position: relative;
     white-space: nowrap;
     cursor: pointer;
+  }
+  .triangleNode span{
+    margin-left: -14px;
   }
 </style>

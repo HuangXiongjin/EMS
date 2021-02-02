@@ -92,7 +92,7 @@ export default new Router({
         {path:'/Personnel',name:'Personnel',meta:{ title:'人员管理',type:"系统管理"},component:Personnel},
         {path:'/Permission',name:'Permission',meta:{ title:'权限维护',type:"系统管理"},component:Permission},
         {path:'/Log',name:'Log',meta:{ title:'系统日志',type:"系统管理"},component:Log},
-        {path:'/flowGraph',name:'flowGraph',meta:{ title:'流程图管理',type:"系统管理"},component:flowGraph},
+        {path:'/flowGraph',name:'flowGraph',meta:{ title:'工作流管理',type:"系统管理"},component:flowGraph},
         {path:'/BuildTable',name:'BuildTable',meta:{ title:'可视化建表',type:"系统管理"},component:BuildTable},
       ]
     },
