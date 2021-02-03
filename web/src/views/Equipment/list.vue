@@ -76,8 +76,9 @@
           <!--<el-table-column prop="NetValue" label="当前净值"></el-table-column>-->
           <!--<el-table-column prop="TechnicalParameter" label="技术参数"></el-table-column>-->
           <!--<el-table-column prop="Comment" label="备注"></el-table-column>-->
-          <el-table-column label="操作" fixed="right" width="150">
+          <el-table-column label="操作" fixed="right" width="240">
             <template slot-scope="scope">
+              <el-button size="mini" @click="uploadImg(scope.$index, scope.row)">设备图</el-button>
               <el-button size="mini" type="warning" @click="Edit(scope.$index, scope.row)">编辑</el-button>
               <el-button size="mini" type="danger" @click="Delete(scope.$index, scope.row)">删除</el-button>
             </template>
@@ -186,6 +187,14 @@
             <el-button type="primary" @click="save">保 存</el-button>
           </span>
         </el-dialog>
+        <el-dialog title="设备图片上传" :visible.sync="TableData.uploadDialogVisible" width="60%" :append-to-body="true">
+          <el-upload action='/api/upload_picture' :on-success="onsuccess" :on-change="getFile" :limit="1" list-type="picture" :auto-upload="false" accept=".jpg,.png">
+            <el-button size="small" type="primary">选择图片上传,最多上传一张图片</el-button>
+          </el-upload>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="TableData.uploadDialogVisible = false">取 消</el-button>
+          </span>
+        </el-dialog>
       </div>
     </el-col>
     <el-col :span="24" v-if="$route.name === 'EquipmentDetails'">
@@ -207,6 +216,7 @@
           multipleSelection: [],
           dialogTitle:"",
           dialogVisible:false,
+          uploadDialogVisible:false,
           searchField:{
             EquipmentCode:"",
             EquipmentName:"",
@@ -298,6 +308,9 @@
         this.TableData.dialogVisible = true
         this.TableData.dialogTitle = "添加"
       },
+      uploadImg(index,row){
+        this.TableData.uploadDialogVisible = true
+      },
       Edit(index,row){
         this.TableData.dialogVisible = true
         this.TableData.dialogTitle = "修改"
@@ -384,6 +397,12 @@
             console.log("请求错误")
           })
         }
+      },
+      onsuccess(file){
+        console.log(file)
+      },
+      getFile(file, fileList){
+
       },
       CreateQrcode(){
         var params = {

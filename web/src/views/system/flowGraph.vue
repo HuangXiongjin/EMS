@@ -2,9 +2,14 @@
   <el-row :gutter="20">
     <el-col :span="24">
       <el-row :gutter="20">
-        <el-col :span="24">
+        <el-col :span="4">
           <div class="cardContainer">
-            <el-col :span="4" v-for="(item,index) in FlowData" :key="index">
+            <el-col :span="24">
+              <div class="colItemContainer text-center">
+                <p class="marginBottom marginTop text-size-36" @click="addFlow"><i class="el-icon-circle-plus-outline"></i></p>
+              </div>
+            </el-col>
+            <el-col :span="24" v-for="(item,index) in FlowData" :key="index">
               <div class="colItemContainer text-center">
                 <div @click="toG6(item)" :class="{'color-lightgreen':item.ProcessName===selectRow.ProcessName}">
                   <p class="marginBottom-10 text-size-36"><i :class="item.Icon"></i></p>
@@ -12,25 +17,20 @@
                 </div>
               </div>
             </el-col>
-            <el-col :span="4">
-              <div class="colItemContainer text-center">
-                <p class="marginBottom marginTop text-size-36" @click="addFlow"><i class="el-icon-circle-plus-outline"></i></p>
-              </div>
-              <el-dialog title="添加流程" :visible.sync="dialogVisible" width="50%" :append-to-body="true">
-                <el-form :model="formParameters" label-width="110px">
-                  <el-form-item label="流程名称" >
-                    <el-input v-model="formParameters.ProcessName"></el-input>
-                  </el-form-item>
-                </el-form>
-                <span slot="footer" class="dialog-footer">
-                  <el-button @click="dialogVisible = false">取 消</el-button>
-                  <el-button type="primary" @click="saveAddFlow">保存</el-button>
-                </span>
-              </el-dialog>
-            </el-col>
+            <el-dialog title="添加流程" :visible.sync="dialogVisible" width="50%" :append-to-body="true">
+              <el-form :model="formParameters" label-width="110px">
+                <el-form-item label="流程名称" >
+                  <el-input v-model="formParameters.ProcessName"></el-input>
+                </el-form-item>
+              </el-form>
+              <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="saveAddFlow">保存</el-button>
+              </span>
+            </el-dialog>
           </div>
         </el-col>
-        <el-col :span="24">
+        <el-col :span="20">
           <el-form :inline="true">
             <el-form-item>
               <el-radio-group v-model="modeRadio" size="mini" @change="changeMode">
@@ -79,8 +79,16 @@
                   <el-form-item label="节点名称">
                     <el-input size="small" v-model="clickModel.label" @change="changeNode"></el-input>
                   </el-form-item>
-                  <el-form-item label="驳回类型" v-if="showRefuseType">
-
+                  <el-form-item label="节点阶段状态">
+                    <el-input size="small" v-model="clickModel.state" @change="changeNodeState"></el-input>
+                  </el-form-item>
+                  <el-form-item label="状态颜色">
+                    <el-color-picker v-model="clickModel.stateColor" @active-change="changeNodeStateColor"></el-color-picker>
+                  </el-form-item>
+                  <el-form-item label="指定驳回阶段" v-if="showRefuseType">
+                    <el-select v-model="RefuseNode" placeholder="请选择指定的驳回阶段" @change="changeRefuseNode">
+                      <el-option v-for="(item,index) in RefuseNodes" :key="index" :label="item.label" :value="item.id"></el-option>
+                    </el-select>
                   </el-form-item>
                 </el-form>
                 </div>
@@ -127,7 +135,8 @@
         ],
         nodeType:"", //存拖动的元素类型
         showRefuseType:false, // 是否显示驳回类型
-        RefuseType:"", //
+        RefuseNode:"", //选择驳回节点
+        RefuseNodes:[] //驳回时可选的节点数据
       }
     },
     mounted() {
@@ -474,6 +483,21 @@
               that.clickModel = evt.item.getModel()
               if(that.clickModel.type === "triangle"){
                 that.showRefuseType = true
+                var nodes = this.graph.save().nodes
+                that.RefuseNodes = []
+                that.RefuseNode = ""
+                //循环所有节点内容，渲染下拉框数据
+                nodes.forEach(item =>{
+                  if(item.type != "triangle"){
+                    that.RefuseNodes.push(item)
+                  }
+                })
+                //判断是否有驳回阶段，有则为下拉框赋值
+                if(that.clickModel.RefuseNodeId){
+                  that.RefuseNode = that.clickModel.RefuseNodeId
+                }else{
+                  that.RefuseNode = ""
+                }
               }else{
                 that.showRefuseType = false
               }
@@ -498,6 +522,36 @@
           });
         }
       },
+      changeNodeState(text){ //修改节点状态
+        let that = this
+        if(that.clickModel.state){
+          that.graph.update(that.clickModel.id,{
+            state:text
+          });
+        }
+      },
+      changeNodeStateColor(text){ //修改节点状态
+        let that = this
+        if(that.clickModel.stateColor){
+          that.graph.update(that.clickModel.id,{
+            stateColor:text
+          });
+        }
+      },
+      changeRefuseNode(){
+        let that = this
+        if(that.clickModel.label){
+          var nodes = this.graph.save().nodes
+          nodes.forEach(item =>{
+            if(item.id === that.RefuseNode){
+              that.graph.update(that.clickModel.id,{
+                RefuseNodeId:that.RefuseNode,
+                RefuseNode:item.label,
+              });
+            }
+          })
+        }
+      },
       onDragstart(e){
         this.nodeType = e.target.attributes.type.value
       },
@@ -511,7 +565,6 @@
         //console.log(e)
       },
       onDrop(e){  //在画布内松开鼠标 添加节点
-        console.log(this.nodeType)
         if(this.nodeType === "triangle"){
           this.graph.addItem('node', {
             x: e.offsetX,
