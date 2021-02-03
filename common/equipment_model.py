@@ -78,6 +78,8 @@ class Equipment(Base):
     Comment = Column(Unicode(32), nullable=True)
     # 设备二维码
     QRCode = Column(Unicode(2048), nullable=True)
+    # 设备图片
+    Picture = Column(Unicode(5120), nullable=True)
 
 
 class Allocation(Base):
@@ -109,16 +111,23 @@ class Allocation(Base):
     Status = Column(Unicode(64), nullable=True)
 
 
-# class Life(Base):
-#     """操作周期"""
-#     __tablename__ = "Life"
-#
-#     ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
-#     # 单号
-#     No = Column(Unicode(128), nullable=True)
-#     # 操作时间
-#     # 操作人
-#     #
+class Life(Base):
+    """操作周期"""
+    __tablename__ = "Life"
+
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    # 单号
+    No = Column(Unicode(128), nullable=True)
+    # 操作时间
+    Time = Column(Unicode(64), nullable=True)
+    # 操作人
+    User = Column(Unicode(64), nullable=True)
+    # 当前节点
+    Node = Column(Unicode(64), nullable=True)
+    # 当前状态
+    Status = Column(Unicode(64), nullable=True)
+    # 操做内容
+    Content = Column(Unicode(128), nullable=True)
 
 
 #
