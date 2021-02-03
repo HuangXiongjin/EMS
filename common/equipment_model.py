@@ -80,6 +80,47 @@ class Equipment(Base):
     QRCode = Column(Unicode(2048), nullable=True)
 
 
+class Allocation(Base):
+    """设备调拨"""
+    __tablename__ = "Allocation"
+
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    # 调拨单号
+    No = Column(Unicode(128), nullable=True)
+    # 设备名称
+    EquipmentName = Column(Unicode(128), nullable=True)
+    # 设备编号
+    EquipmentCode = Column(Unicode(128), nullable=True)
+    # 规格
+    Specs = Column(Unicode(64), nullable=True)
+    # 调拨部门
+    AllocationDepartment = Column(Unicode(128), nullable=True)
+    # 调出地点
+    AddressOut = Column(Unicode(128), nullable=True)
+    # 调入地点
+    AddressInto = Column(Unicode(128), nullable=True)
+    # 申请时间
+    Time = Column(Unicode(64), nullable=True)
+    # 申请人
+    User = Column(Unicode(64), nullable=True)
+    # 当前节点
+    Node = Column(Unicode(64), nullable=True)
+    # 当前状态
+    Status = Column(Unicode(64), nullable=True)
+
+
+# class Life(Base):
+#     """操作周期"""
+#     __tablename__ = "Life"
+#
+#     ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+#     # 单号
+#     No = Column(Unicode(128), nullable=True)
+#     # 操作时间
+#     # 操作人
+#     #
+
+
 #
 # class InstructionsCenter(Base):
 #     """说明书中间表"""
