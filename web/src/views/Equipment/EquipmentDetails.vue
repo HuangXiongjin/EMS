@@ -88,6 +88,12 @@
                 <td>备注</td>
                 <td colspan="7">{{ EquipmentData.Comment }}</td>
               </tr>
+              <tr>
+                <td>图片</td>
+                <td colspan="7">
+                  <el-image style="width:100px;" :src="'/api/upload_picture?EquipmentCode=' + EquipmentData.EquipmentCode + '&t=' + Math.random()" :preview-src-list="('/api/upload_picture?EquipmentCode=' + EquipmentData.EquipmentCode + '&t=' + Math.random()).split() "></el-image>
+                </td>
+              </tr>
             </table>
           </div>
         </el-tab-pane>

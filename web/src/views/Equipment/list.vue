@@ -32,6 +32,16 @@
           </el-form-item>
         </el-form>
         <el-table :data="TableData.data" border size="mini" :header-cell-style="{ 'background':'#F5F7FA' }" ref="multipleTable" @select="handleSelect" @selection-change="handleSelectionChange" @row-click="handleRowClick">
+          <el-table-column prop="Picture" label="图片">
+            <template slot-scope="scope">
+              <el-image v-if="scope.row.Picture" style="height: 100%;" :src="'/api/upload_picture?EquipmentCode=' + scope.row.EquipmentCode + '&t=' + Math.random()"></el-image>
+              <el-image v-if="!scope.row.Picture" style="width: 100%;text-align: center;">
+                <div slot="error" style="width: 100%;">
+                  <i class="el-icon-picture-outline text-size-24"></i>
+                </div>
+              </el-image>
+            </template>
+          </el-table-column>
           <el-table-column prop="EquipmentCode" label="设备编号">
             <template slot-scope="scope">
               <a href="javascript:;" style="color:#2196F3;" @click="seeDetails(scope.row.EquipmentCode)">{{ scope.row.EquipmentCode }}</a>
@@ -188,9 +198,16 @@
           </span>
         </el-dialog>
         <el-dialog title="设备图片上传" :visible.sync="TableData.uploadDialogVisible" width="60%" :append-to-body="true">
-          <el-upload action='/api/upload_picture' :on-success="onsuccess" :on-change="getFile" :limit="1" list-type="picture" :auto-upload="false" accept=".jpg,.png">
-            <el-button size="small" type="primary">选择图片上传,最多上传一张图片</el-button>
-          </el-upload>
+          <el-form :inline="true" label-width="80px">
+            <el-form-item label="设备编号">
+              <el-input v-model="TableData.uploadEquipmentRow.EquipmentCode" size="small" :disabled="true"></el-input>
+            </el-form-item>
+            <el-form-item label="设备图片">
+              <el-upload action='/api/upload_picture' :data="TableData.uploadEquipmentRow" :file-list="fileList" :on-success="onsuccess" :on-change="getFile" :limit="1" list-type="picture" accept=".jpg,.png">
+                <el-button size="small" type="primary">选择图片上传,最多上传一张图片</el-button>
+              </el-upload>
+            </el-form-item>
+          </el-form>
           <span slot="footer" class="dialog-footer">
             <el-button @click="TableData.uploadDialogVisible = false">取 消</el-button>
           </span>
@@ -251,7 +268,9 @@
             TechnicalParameter:"",
             Comment:"",
           },
+          uploadEquipmentRow:{}
         },
+        fileList:[]
       }
     },
     mounted(){
@@ -310,6 +329,15 @@
       },
       uploadImg(index,row){
         this.TableData.uploadDialogVisible = true
+        this.TableData.uploadEquipmentRow = row
+        if(row.Picture){
+          this.fileList = [
+            {name:row.EquipmentCode,url:"/api/upload_picture?EquipmentCode=" + row.EquipmentCode + '&t=' + Math.random()}
+          ]
+        }else{
+          this.fileList = []
+        }
+
       },
       Edit(index,row){
         this.TableData.dialogVisible = true
@@ -398,8 +426,15 @@
           })
         }
       },
-      onsuccess(file){
-        console.log(file)
+      onsuccess(res,file){
+        if(res.code === "1000"){
+          this.$message({
+            type: 'success',
+            message: "上传成功，需刷新页面可查看最新图片"
+          });
+          this.TableData.uploadDialogVisible = false
+          this.getTableData()
+        }
       },
       getFile(file, fileList){
 
