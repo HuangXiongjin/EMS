@@ -68,10 +68,11 @@ def generate_qrcode():
     return json.dumps({'code': '1000', 'msg': '成功', 'data': data}, cls=MyEncoder, ensure_ascii=False)
 
 
-@equipment_management.route('/upload_picture', methods=['GET'])
+@equipment_management.route('/upload_picture', methods=['OPTIONS'])
 def upload_picture():
     """上传设备图片"""
     image_name = request.values.get('EquipmentCode')
+    r = request
     file = request.files.get('picture')
     root_path = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
     file_path = os.path.join(root_path, 'picture')
