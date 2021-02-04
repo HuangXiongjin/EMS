@@ -68,47 +68,49 @@ def generate_qrcode():
     return json.dumps({'code': '1000', 'msg': '成功', 'data': data}, cls=MyEncoder, ensure_ascii=False)
 
 
-@equipment_management.route('/upload_picture', methods=['POST'])
+@equipment_management.route('/upload_picture', methods=['POST', 'GET'])
 def upload_picture():
     """上传设备图片"""
     EquipmentCode = request.values.get('EquipmentCode')
-    r = request
-    file = request.files.get('file')
-    ext = file.filename.split('.')[-1]
-    file_name = EquipmentCode + '.' + ext
     root_path = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
     file_path = os.path.join(root_path, 'picture')
-    file_full_path = os.path.join(root_path, f'picture\\{file_name}')
-    # file.save(file_path, file_name)
-    file.save(file_full_path)
-    data = db_session.query(Equipment).filter_by(EquipmentCode=EquipmentCode).first()
-    data.Picture = file_full_path
-    db_session.commit()
-    db_session.close()
-    return json.dumps({'code': '1000', 'msg': '成功', 'data': file_full_path}, cls=MyEncoder, ensure_ascii=False)
+    if request.method == 'POST':
+        file = request.files.get('file')
+        ext = file.filename.split('.')[-1]
+        file_name = EquipmentCode + '.' + ext
+        file_full_path = os.path.join(root_path, f'picture\\{file_name}')
+        file.save(file_full_path)
+        data = db_session.query(Equipment).filter_by(EquipmentCode=EquipmentCode).first()
+        data.Picture = file_name
+        db_session.commit()
+        db_session.close()
+        return json.dumps({'code': '1000', 'msg': '成功', 'data': file_full_path}, cls=MyEncoder, ensure_ascii=False)
+    if request.method == 'GET':
+        data = db_session.query(Equipment).filter_by(EquipmentCode=EquipmentCode).first()
+        return send_from_directory(file_path, data.Picture)
 
 
-@equipment_management.route('/avatar', methods=['GET'])
-def get_avatar():
-    # width = request.args.get('width', 200)
-    # height = request.args.get('height', 200)
-    #
-    # user = Users.query.get(user_id)
-    # filename = user.avatar
-    # pic_path = '%s_%s_%s.%s' % (filename.split('.')[0], width, height, filename.split('.')[-1])
-    #
-    # print(pic_path)
-    #
-    # root_path = get_root_path(current_app)
-    # filepath = os.path.join(root_path, current_app.config['UPLOAD_PATH'])
-    # print(filepath)
-    root_path = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-    file_path = os.path.join(root_path, 'picture')
-    pic_path = 'JX1001.png'
-    a = send_from_directory(file_path, pic_path)
-    # data = db_session.query(Equipment).filter_by(EquipmentCode="JX1001").first()
-    # data.Picture = a
-    # db_session.commit()
-    # db_session.close()
-
-    return json.dumps({'code': '1000', 'msg': '成功', 'data': a}, cls=MyEncoder, ensure_ascii=False)
+# @equipment_management.route('/avatar', methods=['GET'])
+# def get_avatar():
+#     # width = request.args.get('width', 200)
+#     # height = request.args.get('height', 200)
+#     #
+#     # user = Users.query.get(user_id)
+#     # filename = user.avatar
+#     # pic_path = '%s_%s_%s.%s' % (filename.split('.')[0], width, height, filename.split('.')[-1])
+#     #
+#     # print(pic_path)
+#     #
+#     # root_path = get_root_path(current_app)
+#     # filepath = os.path.join(root_path, current_app.config['UPLOAD_PATH'])
+#     # print(filepath)
+#     root_path = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+#     file_path = os.path.join(root_path, 'picture')
+#     pic_path = 'JX1001.png'
+#     a = send_from_directory(file_path, pic_path)
+#     # data = db_session.query(Equipment).filter_by(EquipmentCode="JX1001").first()
+#     # data.Picture = a
+#     # db_session.commit()
+#     # db_session.close()
+#
+#     return json.dumps({'code': '1000', 'msg': '成功', 'data': a}, cls=MyEncoder, ensure_ascii=False)
