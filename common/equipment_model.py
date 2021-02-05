@@ -105,6 +105,8 @@ class Allocation(Base):
     Time = Column(Unicode(64), nullable=True)
     # 申请人
     User = Column(Unicode(64), nullable=True)
+    # 调拨原因
+    Comment = Column(Unicode(128), nullable=True)
     # 当前节点
     Node = Column(Unicode(64), nullable=True)
     # 当前状态
