@@ -200,7 +200,6 @@
           if(item.ProcessName === label.ProcessName){
             if(item.ProcessStructure){
               this.selectFlowData = JSON.parse(item.ProcessStructure)
-              console.log(this.selectFlowData)
             }else{
               this.selectFlowData = {}
             }
