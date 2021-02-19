@@ -25,9 +25,11 @@ clients = dict()
 # 设置服务器端口
 define("port", default=5002, type=int)
 
+
 class IndexHandler(RequestHandler):
     def get(self):
         self.render("chat-client.html")
+
 
 class SendThread(threading.Thread):
     def run(self):
@@ -44,7 +46,7 @@ class SendThread(threading.Thread):
                 for oc in oclass:
                     oc_dict_i_tag[returnb(oc)] = returnb(oclass.get(oc))
                 json_data = json.dumps(oc_dict_i_tag)
-                bytemsg = bytes(json_data,encoding="utf-8")
+                bytemsg = bytes(json_data, encoding="utf-8")
                 for key in clients.keys():
                     clients[key]["object"].write_message(bytemsg)
                 runcount = runcount + 1
@@ -76,16 +78,19 @@ class ChatHandler(WebSocketHandler):
     def check_origin(self, origin):
         return True  # 允许WebSocket的跨域请求
 
+
 def strtofloat(f):
     try:
-        if f == None or f == "" or f == b'':
+        if f is None or f == "" or f == b'':
             return 0.0
         else:
             return round(float(f), 2)
     except Exception as e:
         print(e)
+
+
 def returnb(rod):
-    if rod == None or rod == "" or rod == b'':
+    if rod is None or rod == "" or rod == b'':
         return rod
     else:
         return rod.decode()
