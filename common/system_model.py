@@ -52,7 +52,7 @@ class CreateTableSet(Base):
     TableDescrip = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
 
-# # 4.表字段配置：选择一个表，将此表的数据（字段）显示出来（新表只有ID）
+# 4.表字段配置：选择一个表，将此表的数据（字段）显示出来（新表只有ID）
 class FieldSet(Base):
     """字段表表头"""
     __tablename__ = 'FieldSet'
@@ -513,7 +513,7 @@ class AreaMaintain(Base):
 #
 #
 class TechnologicalProcess(Base):
-    '''流程'''
+    """流程"""
     __tablename__ = "TechnologicalProcess"
 
     # ID:
