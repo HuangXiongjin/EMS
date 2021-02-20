@@ -1,36 +1,27 @@
-// The Vue build version to load with the `import` command
-// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-import CollapseTransition from 'element-ui/lib/transitions/collapse-transition';
 import Vue from 'vue'
-import App from './App'
+import App from './App.vue'
 import router from './router'
-import ElementUI from 'element-ui'
-import axios from 'axios'
-import qs from 'qs'
-Vue.use(ElementUI)
-import 'element-ui/lib/theme-chalk/index.css'
-import 'font-awesome/css/font-awesome.min.css'
-import VCharts from 'v-charts'
 import store from './store'
-import $ from 'jquery'
-import has from './assets/js/btnPermissions.js';
 
-Vue.config.productionTip = false
-Vue.prototype.axios = axios
-Vue.prototype.qs = qs
-Vue.use(VCharts)
+import ElementUI from 'element-ui';
+import axios from 'axios';
+import 'element-ui/lib/theme-chalk/index.css';
+import 'font-awesome/css/font-awesome.min.css';
+import qs from 'qs';
+import VCharts from 'v-charts';
 import Mint from 'mint-ui';
 import 'mint-ui/lib/style.css';
+
+Vue.use(ElementUI);
+Vue.use(VCharts);
 Vue.use(Mint);
+Vue.prototype.axios = axios
+Vue.prototype.qs = qs
 
 Vue.config.productionTip = false
-Vue.component(CollapseTransition.name, CollapseTransition)
 
-/* eslint-disable no-new */
 new Vue({
-  el: '#app',
   router,
   store,
-  components: { App },
-  template: '<App/>'
-})
+  render: h => h(App)
+}).$mount('#app')

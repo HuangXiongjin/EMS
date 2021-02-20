@@ -1,17 +1,12 @@
 <template>
-  <div id="app" class="white-theme">
+  <div id="app">
     <router-view/>
   </div>
 </template>
 
-<script>
-  export default {
-    name: 'App'
-  }
-</script>
-<style lang="less">
-  @import "../static/css/font.css";
-  @import './assets/common.less';
+<style>
+  @import 'assets/css/font.css';
+  @import 'assets/css/common.css';
   body {
     font-family:PingFang;
     -webkit-font-smoothing: antialiased;
