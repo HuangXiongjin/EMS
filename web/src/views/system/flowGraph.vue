@@ -10,17 +10,29 @@
               </div>
             </el-col>
             <el-col :span="24" v-for="(item,index) in FlowData" :key="index">
-              <div class="colItemContainer text-center">
-                <div @click="toG6(item)" :class="{'color-lightgreen':item.ProcessName===selectRow.ProcessName}">
-                  <p class="marginBottom-10 text-size-36"><i :class="item.Icon"></i></p>
-                  <p class="text-size-16">{{ item.ProcessName }}</p>
+              <el-tooltip effect="light" placement="right">
+                <div slot="content">
+                  <p>备注：{{ item.Description }}</p>
+                  <p>版本：{{ item.Version }}</p>
                 </div>
-              </div>
+                <div class="colItemContainer text-center">
+                  <div @click="toG6(item)" :class="{'color-lightgreen':item.ProcessName===selectRow.ProcessName}">
+                    <p class="marginBottom-10 text-size-36"><i :class="item.Icon"></i></p>
+                    <p class="text-size-16">{{ item.ProcessName }}</p>
+                  </div>
+                </div>
+              </el-tooltip>
             </el-col>
             <el-dialog title="添加流程" :visible.sync="dialogVisible" width="50%" :append-to-body="true">
               <el-form :model="formParameters" label-width="110px">
                 <el-form-item label="流程名称" >
                   <el-input v-model="formParameters.ProcessName"></el-input>
+                </el-form-item>
+                <el-form-item label="描述" >
+                  <el-input v-model="formParameters.Description"></el-input>
+                </el-form-item>
+                <el-form-item label="版本号" >
+                  <el-input v-model="formParameters.Version"></el-input>
                 </el-form-item>
               </el-form>
               <span slot="footer" class="dialog-footer">
@@ -61,7 +73,7 @@
             </el-form-item>
           </el-form>
           <el-row :gutter="20">
-            <el-col :span="20">
+            <el-col :span="19">
               <div class="platformContainer">
                 <div
                   class="onDown"
@@ -73,25 +85,48 @@
                 </div>
               </div>
             </el-col>
-            <el-col :span="4">
+            <el-col :span="5">
               <div class="platformContainer">
                 <el-form v-model="clickModel">
                   <el-form-item label="节点名称">
                     <el-input size="small" v-model="clickModel.label" @change="changeNode"></el-input>
                   </el-form-item>
-                  <el-form-item label="节点阶段状态">
+                  <el-form-item label="阶段完成状态">
                     <el-input size="small" v-model="clickModel.state" @change="changeNodeState"></el-input>
                   </el-form-item>
                   <el-form-item label="状态颜色">
                     <el-color-picker v-model="clickModel.stateColor" @active-change="changeNodeStateColor"></el-color-picker>
                   </el-form-item>
-                  <el-form-item label="指定驳回阶段" v-if="showRefuseType">
-                    <el-select v-model="RefuseNode" placeholder="请选择指定的驳回阶段" @change="changeRefuseNode">
-                      <el-option v-for="(item,index) in RefuseNodes" :key="index" :label="item.label" :value="item.id"></el-option>
-                    </el-select>
+                  <!--<el-form-item label="指定驳回阶段" v-if="showRefuseType">-->
+                    <!--<el-select v-model="RefuseNode" placeholder="请选择指定的驳回阶段" @change="changeRefuseNode">-->
+                      <!--<el-option v-for="(item,index) in RefuseNodes" :key="index" :label="item.label" :value="item.id"></el-option>-->
+                    <!--</el-select>-->
+                  <!--</el-form-item>-->
+                  <el-form-item label="额外提交参数">
+                    <el-form class="clearfix">
+                      <el-form-item label="名称">
+                        <el-input v-model="submitField.label" size="mini"></el-input>
+                      </el-form-item>
+                      <el-form-item label="字段">
+                        <el-input v-model="submitField.prop" size="mini"></el-input>
+                      </el-form-item>
+                    </el-form>
+                    <p class="clearfix text-right"><el-button size="mini" type="success" @click="saveSubmitField">保存添加</el-button></p>
+                    <table class="elementTable text-size-14 text-center">
+                      <tr>
+                        <td>字段</td>
+                        <td>名称</td>
+                        <td>删除</td>
+                      </tr>
+                      <tr v-for="(item,index) in submitFieldList" :key="index">
+                        <td>{{ item.prop }}</td>
+                        <td>{{ item.label }}</td>
+                        <td><el-button size="mini" type="danger" icon="el-icon-minus" circle @click="removeSubmitField(index)"></el-button></td>
+                      </tr>
+                    </table>
                   </el-form-item>
                 </el-form>
-                </div>
+              </div>
             </el-col>
           </el-row>
         </el-col>
@@ -113,6 +148,8 @@
         dialogVisible:false,
         formParameters:{
           ProcessName:"",
+          Description:"",
+          Version:"",
         },
         selectRow:"",
         selectFlowData:"",
@@ -134,9 +171,14 @@
           {label:"结束",class:"circleNode",type:"circle"},
         ],
         nodeType:"", //存拖动的元素类型
-        showRefuseType:false, // 是否显示驳回类型
-        RefuseNode:"", //选择驳回节点
-        RefuseNodes:[] //驳回时可选的节点数据
+        // showRefuseType:false, // 是否显示驳回类型
+        // RefuseNode:"", //选择驳回节点
+        // RefuseNodes:[] //驳回时可选的节点数据
+        submitFieldList:[], //额外提交的字段列表
+        submitField:{
+          prop:"",
+          label:""
+        },
       }
     },
     mounted() {
@@ -153,6 +195,7 @@
         }).then(res =>{
           if(res.data.code === "200"){
             var data = res.data.data
+            that.FlowData = []
             that.FlowData = data.rows
           }
         },res =>{
@@ -167,7 +210,10 @@
           var params = {
             tableName:this.FlowtableName,
             ProcessName:this.formParameters.ProcessName,
-            Icon:"fa fa-code-fork"
+            Description:this.formParameters.Description,
+            InputDate:moment().format("YYYY-MM-DD HH:mm:ss"),
+            Version:this.formParameters.Version,
+            Icon:"fa fa-code-fork",
           }
           this.axios.post("/api/CUID",this.qs.stringify(params)).then(res =>{
             if(res.data.code === "200"){
@@ -477,29 +523,34 @@
             const {item, target} = evt
             const targetType = target.get('type')
             const name = target.get('name')
-            if(targetType === 'text' || targetType === 'rect' || targetType === 'path' || targetType === 'circle'){
+            if(targetType === 'text' || targetType === 'rect' || targetType === 'path' || targetType === 'circle' || targetType === 'ellipse'){
               that.clickNode = evt.item
               that.clickModel = evt.item.getModel()
-              if(that.clickModel.type === "triangle"){
-                that.showRefuseType = true
-                var nodes = this.graph.save().nodes
-                that.RefuseNodes = []
-                that.RefuseNode = ""
-                //循环所有节点内容，渲染下拉框数据
-                nodes.forEach(item =>{
-                  if(item.type != "triangle"){
-                    that.RefuseNodes.push(item)
-                  }
-                })
-                //判断是否有驳回阶段，有则为下拉框赋值
-                if(that.clickModel.RefuseNodeId){
-                  that.RefuseNode = that.clickModel.RefuseNodeId
-                }else{
-                  that.RefuseNode = ""
-                }
+              if(that.clickModel.hasOwnProperty("submitFieldList")){
+                that.submitFieldList = that.clickModel.submitFieldList
               }else{
-                that.showRefuseType = false
+                that.submitFieldList = []
               }
+              // if(that.clickModel.type === "triangle"){
+              //   that.showRefuseType = true
+              //   var nodes = this.graph.save().nodes
+              //   that.RefuseNodes = []
+              //   that.RefuseNode = ""
+              //   //循环所有节点内容，渲染下拉框数据
+              //   nodes.forEach(item =>{
+              //     if(item.type != "triangle"){
+              //       that.RefuseNodes.push(item)
+              //     }
+              //   })
+              //   //判断是否有驳回阶段，有则为下拉框赋值
+              //   if(that.clickModel.RefuseNodeId){
+              //     that.RefuseNode = that.clickModel.RefuseNodeId
+              //   }else{
+              //     that.RefuseNode = ""
+              //   }
+              // }else{
+              //   that.showRefuseType = false
+              // }
             }
           })
         })
@@ -537,20 +588,41 @@
           });
         }
       },
-      changeRefuseNode(){
+      saveSubmitField(){
         let that = this
         if(that.clickModel.label){
-          var nodes = this.graph.save().nodes
-          nodes.forEach(item =>{
-            if(item.id === that.RefuseNode){
-              that.graph.update(that.clickModel.id,{
-                RefuseNodeId:that.RefuseNode,
-                RefuseNode:item.label,
-              });
-            }
+          that.submitFieldList.push({
+            label:that.submitField.label,
+            prop:that.submitField.prop
           })
+          that.graph.updateItem(that.clickModel.id,{
+            submitFieldList:that.submitFieldList
+          });
         }
       },
+      removeSubmitField(index){
+        let that = this
+        if(that.clickModel.label) {
+          that.submitFieldList.splice(index, 1)
+          that.graph.updateItem(that.clickModel.id, {
+            submitFieldList: that.submitFieldList
+          });
+        }
+      },
+      // changeRefuseNode(){
+      //   let that = this
+      //   if(that.clickModel.label){
+      //     var nodes = this.graph.save().nodes
+      //     nodes.forEach(item =>{
+      //       if(item.id === that.RefuseNode){
+      //         that.graph.update(that.clickModel.id,{
+      //           RefuseNodeId:that.RefuseNode,
+      //           RefuseNode:item.label,
+      //         });
+      //       }
+      //     })
+      //   }
+      // },
       onDragstart(e){
         this.nodeType = e.target.attributes.type.value
       },
@@ -582,7 +654,7 @@
             type:this.nodeType,
           },true);
         }
-      }
+      },
     }
   }
 </script>
