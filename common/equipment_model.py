@@ -5,21 +5,6 @@ from sqlalchemy import Column, Integer, Unicode, ForeignKey
 from common.system_model import Base, engine
 
 
-class EquipmentTree(Base):
-    """设备结构树"""
-    __tablename__ = "EquipmentTree"
-
-    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
-    # 设备编号
-    TagCode = Column(Unicode(100), nullable=True)
-    # 设备名称
-    TagName = Column(Unicode(100), nullable=True)
-    # 部门名称
-    ChildrenTag = Column(Unicode(100), nullable=True)
-    # 车间名称
-    ParentTag = Column(Unicode(100), nullable=True)
-
-
 class Equipment(Base):
     __tablename__ = "Equipment"
     # ID:
@@ -118,6 +103,8 @@ class Life(Base):
     __tablename__ = "Life"
 
     ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    # 实例ID
+    RID = Column(Integer, nullable=True)
     # 单号
     No = Column(Unicode(128), nullable=True)
     # 操作时间
@@ -282,130 +269,6 @@ class Life(Base):
 #     # 班次号
 #     work_group = Column(Unicode(64), nullable=True)
 #
-#
-# class FaultRepair(Base):
-#     """故障报修"""
-#     __tablename__ = 'FaultRepair'
-#
-#     id = Column(Integer, autoincrement=True, primary_key=True)
-#     # 设备号
-#     equipment_no = Column(Unicode(256), nullable=False)
-#     # 车间号
-#     workshop_no = Column(Unicode(128), nullable=False)
-#     # 工单号
-#     no = Column(Unicode(256), nullable=False)
-#     # 员工号
-#     worker_no = Column(Unicode(128), nullable=False)
-#     # 姓名
-#     name = Column(Unicode(32), nullable=False)
-#     # 故障原因
-#     reason = Column(Unicode(128), nullable=True)
-#     # 故障图片
-#     picture = Column(Unicode(128), nullable=True)
-#     # 申请时间
-#     time = Column(Unicode(32), nullable=True, default=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-#
-#
-# class Record(Base):
-#     """保润检记录表"""
-#     __tablename__ = "Record"
-#
-#     id = Column(Integer, autoincrement=True, primary_key=True)
-#     # 设备号
-#     equipment_no = Column(Unicode(256), nullable=False)
-#     # 工单号
-#     no = Column(Unicode(256), nullable=False)
-#     # 员工号
-#     worker_no = Column(Unicode(128), nullable=False)
-#     # 姓名
-#     name = Column(Unicode(32), nullable=False)
-#     # 工单类型（维修，保养，润滑，巡检）
-#     type = Column(Unicode(32), nullable=True)
-#     # 设备状态（良好,异常）
-#     status = Column(Unicode(32), default="良好")
-#     # 工作时间
-#     time = Column(Unicode(32), nullable=True, default=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-#
-#
-# class RepairRecord(Base):
-#     """维修记录表"""
-#     __tablename__ = 'RepairRecord'
-#
-#     id = Column(Integer, autoincrement=True, primary_key=True)
-#     # 设备号
-#     equipment_no = Column(Unicode(256), nullable=False)
-#     # 工单号
-#     no = Column(Unicode(256), nullable=False)
-#     # 员工号
-#     worker_no = Column(Unicode(128), nullable=False)
-#     # 设备状态（良好，异常）
-#     status = Column(Unicode(12), default="良好")
-#     # 故障原因
-#     fault_reason = Column(Unicode(128), nullable=True)
-#     # 维修材料
-#     repair_material = Column(Unicode(128), nullable=True)
-#     # 修复验收(是， 否)
-#     repair_status = Column(Unicode(12), default="否")
-#     # 故障等级(一级， 二级， 三级)
-#     fault_rank = Column(Unicode(12), default="一级")
-#     # 维修知识
-#     knowledge = Column(Unicode(256), nullable=True)
-#     # 工作时间
-#     time = Column(Unicode(32), nullable=True, default=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-#
-#
-# class RepairPlan(Base):
-#     """维保检方案"""
-#     __tablename__ = 'RepairPlan'
-#
-#     id = Column(Integer, autoincrement=True, primary_key=True)
-#     # 设备号
-#     equipment_no = Column(Unicode(256), nullable=False)
-#     # 方案编号
-#     plan_no = Column(Unicode(128), nullable=False)
-#     # 部位
-#     position = Column(Unicode(64), nullable=True)
-#     # 工具
-#     tools = Column(Unicode(64), nullable=True)
-#     # 材料
-#     material = Column(Unicode(64), nullable=True)
-#     # 方法
-#     plan = Column(Unicode(64), nullable=True)
-#     # 标准
-#     standard = Column(Unicode(32), nullable=True)
-#     # 周期
-#     period = Column(Unicode(32), nullable=True)
-#     # 实施部门
-#     department = Column(Unicode(32), nullable=True)
-#     # 工单类型（维修，保养，巡检）
-#     type = Column(Unicode(32), nullable=True)
-#
-#
-# class LubricationPlan(Base):
-#     """润滑方案"""
-#     __tablename__ = 'LubricationPlan'
-#
-#     id = Column(Integer, autoincrement=True, primary_key=True)
-#     # 设备号
-#     equipment_no = Column(Unicode(256), nullable=False)
-#     # 方案编号
-#     plan_no = Column(Unicode(128), nullable=False)
-#     # 润滑部位
-#     position = Column(Unicode(64), nullable=True)
-#     # 润滑油品
-#     oils = Column(Unicode(32), nullable=True)
-#     # 润滑方式
-#     way = Column(Unicode(32), nullable=True)
-#     # 换油数量
-#     changes_amount = Column(Unicode(32), nullable=True)
-#     # 换油周期
-#     oils_changes_period = Column(Unicode(32), nullable=True)
-#     # 加油数量
-#     add_amount = Column(Unicode(32), nullable=True)
-#     # 加油周期
-#     oils_add_period = Column(Unicode(32), nullable=True)
-#     # 实施部门
-#     department = Column(Unicode(32), nullable=True)
 #
 #
 # class OrderVerify(Base):

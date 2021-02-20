@@ -4,6 +4,7 @@ import os
 import socket
 
 from flask import Flask, request
+from flask_cors import CORS
 from flask_login import LoginManager
 from flask_restful import Api, Resource
 
@@ -33,6 +34,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = '1qaz2wsx3edd45'
 api = Api(app)
 
+CORS(app, supports_credentials=True)
 app.register_blueprint(login_auth)
 app.register_blueprint(permission_distribution)
 app.register_blueprint(user_manager)

@@ -5,7 +5,7 @@ import base64
 from MyQR import myqr
 from flask import Blueprint, request, send_from_directory
 
-from common.equipment_model import EquipmentTree, Equipment
+from common.equipment_model import Equipment
 from common.system_model import db_session, AreaMaintain
 from tools.handle import MyEncoder
 

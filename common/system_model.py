@@ -513,26 +513,23 @@ class AreaMaintain(Base):
 #
 #
 class TechnologicalProcess(Base):
-    """流程"""
+    """流程存储"""
     __tablename__ = "TechnologicalProcess"
 
-    # ID:
+    # ID
     ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
-
-    # 流程名:
+    # 流程名
     ProcessName = Column(Unicode(80), primary_key=False, autoincrement=False, nullable=True)
-
-    # 流程结构:
+    # 流程结构
     ProcessStructure = Column(Unicode(20000), primary_key=False, autoincrement=False, nullable=True)
-
-    # 流程结构:
+    # 流程图标
     Icon = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
-
-    # 注释:
-    Describtion = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
-
-    # 录入时间:
+    # 描述
+    Description = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
+    # 录入时间
     InputDate = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 版本号
+    Version = Column(Unicode(32), nullable=True)
 #
 #
 # # 模块菜单表
