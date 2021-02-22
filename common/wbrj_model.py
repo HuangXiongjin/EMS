@@ -42,7 +42,7 @@ class KeepPlan(Base):
     # 计划名称
     PlanName = Column(Unicode(128), nullable=True)
     # 关联保养标准单号
-    KeepStandardNo = Column(Unicode(256), nullable=False)
+    KeepStandardNo = Column(Unicode(256), nullable=True)
     # 制定人
     PlanUser = Column(Unicode(128), nullable=True)
     # 保养类型（单次保养，周期保养）
