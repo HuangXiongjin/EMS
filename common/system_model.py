@@ -530,6 +530,8 @@ class TechnologicalProcess(Base):
     InputDate = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
     # 版本号
     Version = Column(Unicode(32), nullable=True)
+    # 表明
+    TableName = Column(Unicode(32), nullable=True)
 #
 #
 # # 模块菜单表

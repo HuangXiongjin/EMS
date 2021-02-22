@@ -31,7 +31,7 @@ class Equipment(Base):
     Source = Column(Unicode(128), nullable=True)
     # 供应商
     Manufacturer = Column(Unicode(128), nullable=True)
-    # 设备状态（正常，闲置，维修中，报废）
+    # 设备状态（正常，带病运行，维修中，报废）
     Status = Column(Unicode(128), default="正常", nullable=True)
     # 购置时间
     PurchaseTime = Column(Unicode(128), nullable=True, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
@@ -227,30 +227,7 @@ class Life(Base):
 #     # 库存预警
 #     status = Column(Unicode(32), default="库存充足")
 #
-#
-# class WorkOrder(Base):
-#     """工单记录"""
-#     __tablename__ = 'WorkOrder'
-#
-#     id = Column(Integer, autoincrement=True, primary_key=True)
-#     # 工单号
-#     no = Column(Unicode(256), nullable=False)
-#     # 设备号
-#     equipment_no = Column(Unicode(256), nullable=False)
-#     # 车间号
-#     workshop_no = Column(Unicode(128), nullable=False)
-#     # 员工号
-#     worker_no = Column(Unicode(128), nullable=False)
-#     # 姓名
-#     name = Column(Unicode(32), nullable=False)
-#     # 工单状态（待处理，待审核，执行中，已完成）
-#     status = Column(Unicode(32), default="待处理")
-#     # 工单类型（维修，保养，润滑，巡检）
-#     type = Column(Unicode(32), nullable=True)
-#     # 开始时间
-#     start_time = Column(Unicode(32), nullable=True, default=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-#     # 结束时间
-#     end_time = Column(Unicode(32), nullable=True, default=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+
 #
 #
 # class Scheduling(Base):

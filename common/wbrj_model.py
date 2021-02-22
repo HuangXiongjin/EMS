@@ -4,21 +4,95 @@ from sqlalchemy import Column, Integer, Unicode
 
 from common.system_model import Base, engine
 
+#
+# class KeepRecord(Base):
+#     """保养记录"""
+#     __tablename__ = 'KeepRecord'
+#
+#     ID = Column(Integer, autoincrement=True, primary_key=True)
+#     # 工单号
+#     No = Column(Unicode(256), nullable=False)
+#     # 设备号
+#     EquipmentCode = Column(Unicode(256), nullable=True)
+#     # 姓名
+#     Name = Column(Unicode(32), nullable=True)
+#     # 保养材料
+#     Material = Column(Unicode(512), nullable=True)
+#     # 保养项目
+#     KeepProject = Column(Unicode(1024), nullable=True)
+#     # 开始时间
+#     StartTime = Column(Unicode(32), nullable=True, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+#     # 结束时间
+#     EndTime = Column(Unicode(32), nullable=True, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+
+
+class KeepPlan(Base):
+    """保养计划"""
+    __tablename__ = 'KeepPlan'
+
+    ID = Column(Integer, autoincrement=True, primary_key=True)
+    # 计划单号
+    No = Column(Unicode(256), nullable=False)
+    # 流程ID
+    TID = Column(Integer, nullable=True)
+    # 设备号
+    EquipmentCode = Column(Unicode(256), nullable=True)
+    # 保养设备
+    KeepEquipment = Column(Unicode(1024), nullable=True)
+    # 计划名称
+    PlanName = Column(Unicode(128), nullable=True)
+    # 关联保养标准单号
+    KeepStandardNo = Column(Unicode(256), nullable=False)
+    # 制定人
+    PlanUser = Column(Unicode(128), nullable=True)
+    # 保养类型（单次保养，周期保养）
+    Type = Column(Unicode(128), nullable=True)
+    # 保养周期
+    Circle = Column(Unicode(128), nullable=True)
+    # 保养项目
+    KeepProject = Column(Unicode(1024), nullable=True)
+    # 提醒时间(单位：天)
+    WarningTime = Column(Unicode(64), nullable=True)
+    # 创建时间
+    FoundTime = Column(Unicode(128), nullable=True)
+    # 下次保养时间
+    NextKeepTime = Column(Unicode(128), nullable=True)
+    # 当前节点
+    Node = Column(Unicode(64), nullable=True)
+    # 当前状态
+    Status = Column(Unicode(64), nullable=True)
+    # 接收人
+    Receiver = Column(Unicode(64), nullable=True)
+    # 工单状态（待接单-已接单-已完成）
+    WorkStatus = Column(Unicode(64), nullable=True)
+    # 开始时间
+    StartTime = Column(Unicode(32), nullable=True, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    # 结束时间
+    EndTime = Column(Unicode(32), nullable=True, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+
 
 class FaultRepair(Base):
     """故障报修"""
     __tablename__ = 'FaultRepair'
 
     ID = Column(Integer, autoincrement=True, primary_key=True)
+    # 报修单号
+    No = Column(Unicode(256), nullable=False)
     # 设备号
     EquipmentCode = Column(Unicode(256), nullable=False)
     # 设备位置
     Position = Column(Unicode(128), nullable=True)
-    # 报修单号
-    No = Column(Unicode(256), nullable=False)
+    # 设备状态（正常，带病运行，维修中，报废）
+    EquipmentStatus = Column(Unicode(128), nullable=True, default='带病运行')
     # 报修人
     Name = Column(Unicode(32), nullable=False)
-    # 故障原因
+    # 故障类型(电气故障-气动故障-机械故障-管道故障)
+    FaultType = Column(Unicode(32), nullable=False)
+    # 故障等级(一般-严重-紧急)
+    FaultLevel = Column(Unicode(64), nullable=True)
+    # 故障描述
+    FaultComment = Column(Unicode(128), nullable=True)
+    # 故障原因（违规操作-磨损老化）
     Reason = Column(Unicode(128), nullable=True)
     # 故障图片
     Picture = Column(Unicode(128), nullable=True)
