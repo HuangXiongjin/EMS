@@ -12,6 +12,7 @@
             <el-col :span="24" v-for="(item,index) in FlowData" :key="index">
               <el-tooltip effect="light" placement="right">
                 <div slot="content">
+                  <p>流程ID：{{ item.ID }}</p>
                   <p>备注：{{ item.Description }}</p>
                   <p>版本：{{ item.Version }}</p>
                 </div>
@@ -61,7 +62,7 @@
                   draggable="true"
                   @dragstart="onDragstart($event)"
                   @dragend="onDragend($event)">
-                  <span>{{item.label}}</span>
+                  <span style="white-space: nowrap;">{{item.label}}</span>
                 </div>
               </div>
             </el-form-item>
@@ -165,8 +166,8 @@
         clickModel:{},
         group:[
           {label:"开始阶段",class:"startNode",type:"ellipse"},
-          {label:"业务阶段",class:"rectNode",type:"rect"},
-          {label:"待定",class:"diamondNode",type:"diamond"},
+          {label:"计划阶段",class:"rectNode",type:"rect"},
+          {label:"任务阶段",class:"diamondNode",type:"diamond"},
           {label:"驳回",class:"triangleNode",type:"triangle"},
           {label:"结束",class:"circleNode",type:"circle"},
         ],
@@ -636,24 +637,18 @@
         //console.log(e)
       },
       onDrop(e){  //在画布内松开鼠标 添加节点
-        if(this.nodeType === "triangle"){
-          this.graph.addItem('node', {
-            x: e.offsetX,
-            y: e.offsetY,
-            id: Date.now().toString(), // Generate the unique id
-            label:"驳回",
-            type:this.nodeType,
-            size:[80,80]
-          },true);
-        }else{
-          this.graph.addItem('node', {
-            x: e.offsetX,
-            y: e.offsetY,
-            id: Date.now().toString(), // Generate the unique id
-            label:"业务阶段",
-            type:this.nodeType,
-          },true);
-        }
+        this.group.forEach(item =>{
+          if(this.nodeType === item.type){
+            this.graph.addItem('node', {
+              x: e.offsetX,
+              y: e.offsetY,
+              id: Date.now().toString(),
+              label:item.label,
+              type:this.nodeType,
+              size:[80,80]
+            },true);
+          }
+        })
       },
     }
   }

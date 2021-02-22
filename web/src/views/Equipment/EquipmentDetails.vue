@@ -105,11 +105,7 @@
               </el-form-item>
             </el-form>
             <el-table :data="AllocationTableData.data" border size="mini" :header-cell-style="{ 'background':'#F5F7FA' }" ref="multipleTable">
-              <el-table-column prop="No" label="调拨单号">
-                <template slot-scope="scope">
-                  <a href="javascript:;" style="color:#2196F3;">{{ scope.row.No }}</a>
-                </template>
-              </el-table-column>
+              <el-table-column prop="No" label="调拨单号"></el-table-column>
               <el-table-column prop="EquipmentName" label="设备名称"></el-table-column>
               <el-table-column prop="EquipmentCode" label="设备编号"></el-table-column>
               <el-table-column prop="Specs" label="规格型号"></el-table-column>
@@ -129,7 +125,7 @@
               </el-table-column>
             </el-table>
             <el-dialog v-if="AllocationTableData.firstBtn" :title="AllocationTableData.firstBtn" :visible.sync="AllocationTableData.dialogVisible" width="60%" :append-to-body="true">
-              <el-form :inline="true" label-width="80px">
+              <el-form :inline="true" label-width="100px">
                 <el-form-item label="设备编号">
                   <el-input v-model="EquipmentData.EquipmentCode" size="small" :disabled="true"></el-input>
                 </el-form-item>
@@ -162,7 +158,9 @@
             </el-dialog>
           </div>
         </el-tab-pane>
-        <!--<el-tab-pane label="角色管理" name="3">角色管理</el-tab-pane>-->
+        <el-tab-pane label="设备保养计划" name="3">
+          <FlowStarted :enableData="keepPlanData"></FlowStarted>
+        </el-tab-pane>
       </el-tabs>
     </el-col>
   </el-row>
@@ -170,8 +168,12 @@
 
 <script>
   var moment = require('moment');
+  import FlowStarted from "../../components/FlowStarted.vue"
   export default {
     name: "EquipmentDetails",
+    components:{
+      FlowStarted
+    },
     data(){
       return{
         EquipmentData:{},
@@ -190,6 +192,25 @@
             Comment:"",
           },
           dialogVisible:false,
+        },
+        keepPlanData:{
+          workflowID:"4",  //工作流引擎ID
+          tableName:"KeepPlan", //展示表格的表名
+          tableColumn:[
+              {label:"计划单号",prop:"No"},
+              {label:"设备编号",prop:"EquipmentCode"},
+              {label:"设备名称",prop:"KeepEquipment"},
+              {label:"关联保养标准单号",prop:"KeepStandardNo"},
+              {label:"制定人",prop:"PlanUser"},
+              {label:"保养类型",prop:"Type"},
+              {label:"保养周期",prop:"Circle"},
+              {label:"保养项目",prop:"KeepProject"},
+              {label:"提醒时间(天)",prop:"WarningTime"},
+              {label:"创建时间",prop:"FoundTime"},
+              {label:"下次保养时间",prop:"NextKeepTime"},
+              {label:"当前节点",prop:"Node"},
+              {label:"当前状态",prop:"Status"},
+          ]
         }
       }
     },
