@@ -98,65 +98,7 @@
           </div>
         </el-tab-pane>
         <el-tab-pane label="调拨转移记录" name="2">
-          <div class="platformContainer">
-            <el-form :inline="true">
-              <el-form-item v-if="AllocationTableData.firstBtn">
-                <el-button type="primary" size="mini" @click="firstBtnEvent">{{ AllocationTableData.firstBtn }}</el-button>
-              </el-form-item>
-            </el-form>
-            <el-table :data="AllocationTableData.data" border size="mini" :header-cell-style="{ 'background':'#F5F7FA' }" ref="multipleTable">
-              <el-table-column prop="No" label="调拨单号"></el-table-column>
-              <el-table-column prop="EquipmentName" label="设备名称"></el-table-column>
-              <el-table-column prop="EquipmentCode" label="设备编号"></el-table-column>
-              <el-table-column prop="Specs" label="规格型号"></el-table-column>
-              <el-table-column prop="AllocationDepartment" label="调拨部门"></el-table-column>
-              <el-table-column prop="AddressOut" label="调出地点"></el-table-column>
-              <el-table-column prop="AddressInto" label="调入地点"></el-table-column>
-              <el-table-column prop="Comment" label="调拨原因"></el-table-column>
-              <el-table-column prop="Time" label="申请时间"></el-table-column>
-              <el-table-column prop="User" label="申请人"></el-table-column>
-              <el-table-column prop="Node" label="当前节点"></el-table-column>
-              <el-table-column prop="Status" label="审批状态">
-                <template slot-scope="scope">
-                  <div v-for="(item,index) in AllocationTableData.ProcessStructure.nodes" :key="index">
-                    <span class="btn-block color-white" v-if="item.state === scope.row.Status" :style="{ background:item.stateColor }">{{ scope.row.Status }}</span>
-                  </div>
-                </template>
-              </el-table-column>
-            </el-table>
-            <el-dialog v-if="AllocationTableData.firstBtn" :title="AllocationTableData.firstBtn" :visible.sync="AllocationTableData.dialogVisible" width="60%" :append-to-body="true">
-              <el-form :inline="true" label-width="100px">
-                <el-form-item label="设备编号">
-                  <el-input v-model="EquipmentData.EquipmentCode" size="small" :disabled="true"></el-input>
-                </el-form-item>
-                <el-form-item label="设备名称">
-                  <el-input v-model="EquipmentData.EquipmentName" size="small" :disabled="true"></el-input>
-                </el-form-item>
-                <el-form-item label="规格型号">
-                  <el-input v-model="EquipmentData.Specs" size="small" :disabled="true"></el-input>
-                </el-form-item>
-                <el-form-item label="调拨单号">
-                  <el-input v-model="AllocationTableData.firstBtnSubmit.No" size="small"></el-input>
-                </el-form-item>
-                <el-form-item label="调拨部门">
-                  <el-input v-model="AllocationTableData.firstBtnSubmit.AllocationDepartment" size="small"></el-input>
-                </el-form-item>
-                <el-form-item label="调出地点">
-                  <el-input v-model="AllocationTableData.firstBtnSubmit.AddressOut" size="small"></el-input>
-                </el-form-item>
-                <el-form-item label="调入地点">
-                  <el-input v-model="AllocationTableData.firstBtnSubmit.AddressInto" size="small"></el-input>
-                </el-form-item>
-                <el-form-item label="调拨原因">
-                  <el-input v-model="AllocationTableData.firstBtnSubmit.Comment" size="small"></el-input>
-                </el-form-item>
-              </el-form>
-              <span slot="footer" class="dialog-footer">
-                <el-button @click="AllocationTableData.dialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="firstBtnFormSave">保 存</el-button>
-              </span>
-            </el-dialog>
-          </div>
+          <FlowStarted :enableData="AllocationData"></FlowStarted>
         </el-tab-pane>
         <el-tab-pane label="设备保养计划" name="3">
           <FlowStarted :enableData="keepPlanData"></FlowStarted>
@@ -178,26 +120,37 @@
       return{
         EquipmentData:{},
         activeName:"1",
-        AllocationTableData:{
-          tableName:"Allocation",
-          workflow:"调拨转移",
-          ProcessStructure:"",
-          data:[],
-          firstBtn:"",
-          firstBtnSubmit:{
-            No:"",
-            AllocationDepartment:"",
-            AddressOut:"",
-            AddressInto:"",
-            Comment:"",
-          },
-          dialogVisible:false,
-        },
-        keepPlanData:{
-          workflowID:"4",  //工作流引擎ID
-          tableName:"KeepPlan", //展示表格的表名
+        AllocationData:{
+          workflowID:"3",  //工作流引擎ID
+          tableName:"Allocation", //展示表格的表名
           tableColumn:[
               {label:"计划单号",prop:"No"},
+              {label:"设备编号",prop:"EquipmentCode"},
+              {label:"设备名称",prop:"EquipmentName"},
+              {label:"调拨部门",prop:"AllocationDepartment"},
+              {label:"调出地点",prop:"AddressOut"},
+              {label:"调入地点",prop:"AddressInto"},
+              {label:"调拨原因",prop:"Comment"},
+              {label:"申请时间",prop:"Time"},
+              {label:"申请人",prop:"User"},
+              {label:"当前节点",prop:"Node"},
+              {label:"当前状态",prop:"Status"},
+
+          ],
+          No:"No",
+          EquipmentCode:"EquipmentCode",
+          EquipmentName:"EquipmentName",
+          Time:"Time",
+          User:"User",
+          Node:"Node",
+          Status:"Status",
+        },
+        keepPlanData:{
+          workflowID:"4",
+          tableName:"KeepPlan",
+          tableColumn:[
+              {label:"计划单号",prop:"No"},
+              {label:"流程ID",prop:"TID"},
               {label:"设备编号",prop:"EquipmentCode"},
               {label:"设备名称",prop:"KeepEquipment"},
               {label:"关联保养标准单号",prop:"KeepStandardNo"},
@@ -210,7 +163,15 @@
               {label:"下次保养时间",prop:"NextKeepTime"},
               {label:"当前节点",prop:"Node"},
               {label:"当前状态",prop:"Status"},
-          ]
+          ],
+          workflowIDField:"TID",
+          No:"No",
+          EquipmentCode:"EquipmentCode",
+          EquipmentName:"KeepEquipment",
+          Time:"FoundTime",
+          User:"PlanUser",
+          Node:"Node",
+          Status:"Status",
         }
       }
     },
@@ -229,7 +190,6 @@
         }).then(res => {
           if(res.data.code === "200"){
             this.EquipmentData = res.data.data.rows[0]
-            this.getAllocation()
           }else{
             that.$message({
               type: 'info',
@@ -241,122 +201,6 @@
       returnList(){
         this.$router.push("/list")
       },
-      //获取设备调拨申请记录
-      getAllocation(){
-        var that = this
-        var params = {
-          tableName: this.AllocationTableData.tableName,
-          EquipmentCode:this.EquipmentData.EquipmentCode,
-        }
-        this.axios.get("/api/CUID",{
-          params: params
-        }).then(res => {
-          if(res.data.code === "200"){
-            this.AllocationTableData.data = res.data.data.rows
-            this.getWorkflow()
-          }else{
-            that.$message({
-              type: 'info',
-              message: res.data.message
-            });
-          }
-        })
-      },
-      getWorkflow(){
-        var that = this
-        var params = {
-          tableName: "TechnologicalProcess",
-          ProcessName:this.AllocationTableData.workflow,
-        }
-        this.axios.get("/api/CUID",{
-          params: params
-        }).then(res => {
-          if(res.data.code === "200"){
-            this.AllocationTableData.ProcessStructure = JSON.parse(res.data.data.rows[0].ProcessStructure)
-            this.AllocationTableData.ProcessStructure.nodes.forEach(item =>{
-              if(item.type === "ellipse"){
-                this.AllocationTableData.firstBtn = item.label
-              }
-            })
-          }else{
-            that.$message({
-              type: 'info',
-              message: res.data.message
-            });
-          }
-        })
-      },
-      firstBtnEvent(){
-        this.AllocationTableData.dialogVisible = true
-      },
-      firstBtnFormSave(){
-        var Status = ""
-        this.AllocationTableData.ProcessStructure.nodes.forEach(item =>{
-          if(item.label === this.AllocationTableData.firstBtn){
-            Status = item.state
-          }
-        })
-        var params = {
-          tableName:this.AllocationTableData.tableName,
-          EquipmentCode:this.EquipmentData.EquipmentCode,
-          EquipmentName:this.EquipmentData.EquipmentName,
-          Specs:this.EquipmentData.Specs,
-          No:this.AllocationTableData.firstBtnSubmit.No,
-          AllocationDepartment:this.AllocationTableData.firstBtnSubmit.AllocationDepartment,
-          AddressOut:this.AllocationTableData.firstBtnSubmit.AddressOut,
-          AddressInto:this.AllocationTableData.firstBtnSubmit.AddressInto,
-          Comment:this.AllocationTableData.firstBtnSubmit.Comment,
-          Time:moment().format("YYYY-MM-DD HH:ss:mm"),
-          User:this.$store.state.UserName,
-          Node:this.AllocationTableData.firstBtn,
-          Status:Status,
-        }
-        this.axios.post("/api/CUID",this.qs.stringify(params)).then(res =>{
-          if(res.data.code === "200"){
-            this.$message({
-              type: 'success',
-              message: res.data.message
-            });
-            this.AllocationTableData.dialogVisible = false
-            this.getAllocation()
-            this.createLife(Status)
-          }else{
-            this.$message({
-              type: 'info',
-              message: res.data.message
-            });
-          }
-        },res =>{
-          console.log("请求错误")
-        })
-      },
-      //添加审批记录
-      createLife(Status){
-        var params = {
-          tableName:"Life",
-          No:this.AllocationTableData.firstBtnSubmit.No,
-          Time:moment().format("YYYY-MM-DD HH:ss:mm"),
-          User:this.$store.state.UserName,
-          Node:this.AllocationTableData.firstBtn,
-          Status:Status,
-          Content:this.AllocationTableData.firstBtn,
-        }
-        this.axios.post("/api/CUID",this.qs.stringify(params)).then(res =>{
-          if(res.data.code === "200"){
-            this.$message({
-              type: 'success',
-              message: res.data.message
-            });
-          }else{
-            this.$message({
-              type: 'info',
-              message: res.data.message
-            });
-          }
-        },res =>{
-          console.log("请求错误")
-        })
-      }
     }
   }
 </script>

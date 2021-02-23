@@ -16,6 +16,9 @@
             <el-form-item label="设备名称">
               <el-input v-model="EquipmentRow.EquipmentName" size="small" :disabled="true"></el-input>
             </el-form-item>
+            <el-form-item label="计划单号" v-if="enableData.hasOwnProperty('No')">
+              <el-input v-model="submitField[enableData.No]" size="small"></el-input>
+            </el-form-item>
             <el-form-item :label="item.label" v-for="(item,index) in flowNode.submitFieldList" :key="index">
               <el-input v-model="submitField[item.prop]" size="small"></el-input>
             </el-form-item>
@@ -29,6 +32,7 @@
 </template>
 
 <script>
+    var moment = require('moment');
     export default {
         name: "FlowStarted",
         props:['enableData'],
@@ -77,7 +81,7 @@
                   params: params
                 }).then(res => {
                   if(res.data.code === "200"){
-                    this.tableData = res.data.data.rows
+                    that.tableData = res.data.data.rows
                   }else{
                     that.$message({
                       type: 'info',
@@ -111,21 +115,35 @@
             },
             subBottonEvent(){
                 this.dialogVisible = true
-                this.flowNode.submitFieldList.forEach(item =>{ //将提交字段添加到绑定的对象中
-                    this.submitField[item.prop] = ""
-                })
             },
             Save(){
-                console.log(this.submitField)
+                var that = this
                 var params = {
-                  tableName:this.AllocationTableData.tableName,
-                  EquipmentCode:this.EquipmentData.EquipmentCode,
-                  EquipmentName:this.EquipmentData.EquipmentName,
-
-                  Time:moment().format("YYYY-MM-DD HH:ss:mm"),
-                  User:this.$store.state.UserName,
-                  Node:this.AllocationTableData.firstBtn,
-                  Status:Status,
+                  tableName:that.enableData.tableName,
+                }
+                if(that.enableData.hasOwnProperty("workflowIDField")){
+                    params[that.enableData.workflowIDField] = that.enableData.workflowID
+                }
+                if(that.enableData.hasOwnProperty("EquipmentCode")){
+                    params[that.enableData.EquipmentCode] = that.EquipmentRow.EquipmentCode
+                }
+                if(that.enableData.hasOwnProperty("EquipmentName")){
+                    params[that.enableData.EquipmentName] = that.EquipmentRow.EquipmentName
+                }
+                if(that.enableData.hasOwnProperty("Time")){
+                    params[that.enableData.Time] = moment().format("YYYY-MM-DD HH:ss:mm")
+                }
+                if(that.enableData.hasOwnProperty("User")){
+                    params[that.enableData.User] = that.$store.state.UserName
+                }
+                if(that.enableData.hasOwnProperty("Node")){
+                    params[that.enableData.Node] = that.flowNode.label
+                }
+                if(that.enableData.hasOwnProperty("Status")){
+                    params[that.enableData.Status] = that.flowNode.state
+                }
+                for(var key in that.submitField){
+                    params[key] = that.submitField[key]
                 }
                 this.axios.post("/api/CUID",this.qs.stringify(params)).then(res =>{
                   if(res.data.code === "200"){
@@ -133,9 +151,37 @@
                       type: 'success',
                       message: res.data.message
                     });
-                    this.AllocationTableData.dialogVisible = false
-                    this.getAllocation()
-                    this.createLife(Status)
+                    this.dialogVisible = false
+                    this.getTableData()
+                    this.createLife()
+                  }else{
+                    this.$message({
+                      type: 'info',
+                      message: res.data.message
+                    });
+                  }
+                },res =>{
+                  console.log("请求错误")
+                })
+            },
+            //添加审批记录
+            createLife(){
+                var that = this
+                var params = {
+                  tableName:"Life",
+                  No:that.submitField[that.enableData.No],
+                  Time:moment().format("YYYY-MM-DD HH:ss:mm"),
+                  User:that.$store.state.UserName,
+                  Node:that.flowNode.label,
+                  Status:that.flowNode.state,
+                  Content:that.flowNode.label,
+                }
+                this.axios.post("/api/CUID",this.qs.stringify(params)).then(res =>{
+                  if(res.data.code === "200"){
+                    this.$message({
+                      type: 'success',
+                      message: res.data.message
+                    });
                   }else{
                     this.$message({
                       type: 'info',
