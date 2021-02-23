@@ -69,6 +69,8 @@ class KeepPlan(Base):
     StartTime = Column(Unicode(32), nullable=True, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     # 结束时间
     EndTime = Column(Unicode(32), nullable=True, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    # 备注
+    Comment = Column(Unicode(128), nullable=True)
 
 
 class FaultRepair(Base):
