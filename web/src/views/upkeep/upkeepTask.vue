@@ -1,13 +1,13 @@
 <template>
-    <FlowTask :enableData="keepTaskData"></FlowTask>
+    <FlowInstance :enableData="keepTaskData"></FlowInstance>
 </template>
 
 <script>
     var moment = require('moment');
-    import FlowTask from "../../components/FlowTask.vue"
+    import FlowInstance from "../../components/FlowInstance.vue"
     export default {
         name: "upkeepTask",
-        components:{ FlowTask },
+        components:{ FlowInstance },
         data(){
             return {
                 keepTaskData:{
@@ -31,6 +31,7 @@
                       {label:"当前节点",prop:"Node"},
                       {label:"当前状态",prop:"Status"},
                     ],
+                    FlowType:"task", //默认为空代表不区分流程是计划还是任务 task任务 plan计划
                     No:"No",
                     EquipmentCode:"EquipmentCode",
                     EquipmentName:"KeepEquipment",

@@ -339,11 +339,10 @@
 }
 /* span方块 */
 .btn-block{
-  display: block;
-  width: 5em;
-  height: 22px;
-  line-height: 22px;
+  display: inline-block;
+  padding: 2px 5px;
   text-align: center;
+  white-space: nowrap;
 }
 /* 圆点 */
 .dotState{

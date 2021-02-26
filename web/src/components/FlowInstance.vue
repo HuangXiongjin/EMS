@@ -6,8 +6,11 @@
                 <el-table :data="tableData" border size="mini" :header-cell-style="{ 'background':'#F5F7FA' }" ref="multipleTable">
                   <el-table-column v-for="(item,index) in enableData.tableColumn" :prop="item.prop" :label="item.label">
                     <template slot-scope="scope">
-                      <a v-if="item.prop === enableData.No" href="javascript:;" style="color:#2196F3;" @click="stepDetails(scope.row)">{{ scope.row[enableData.No] }}</a>
-                      <span v-else>{{ scope.row[item.prop] }}</span>
+                        <a v-if="item.prop === enableData.No" href="javascript:;" style="color:#2196F3;" @click="stepDetails(scope.row)">{{ scope.row[enableData.No] }}</a>
+                        <div v-for="(item,index) in ProcessStructure.nodes" :key="index" v-else-if="item.prop === enableData.Status">
+                            <span class="btn-block color-white" v-if="item.state === scope.row[enableData.Status]" :style="{ background:item.stateColor }">{{ scope.row[enableData.Status] }}</span>
+                        </div>
+                        <span v-else>{{ scope.row[item.prop] }}</span>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -87,8 +90,8 @@
             }
         },
         created(){
-            this.getWorkflow()
             this.getTableData()
+            this.getWorkflow()
         },
         methods:{
             getWorkflow(){
@@ -106,6 +109,9 @@
                     that.ProcessStructure.nodes.forEach(item =>{
                         if(item.type === "ellipse"){
                             firstNodeId = item.id
+                            that.stepsList.push({
+                                title:item.label
+                            })
                         }
                     })
                       findLabelById(firstNodeId)
@@ -113,7 +119,7 @@
                         that.ProcessStructure.edges.forEach(item =>{
                             if(item.source === firstNodeId){
                                 that.ProcessStructure.nodes.forEach(j =>{
-                                    if(j.type === "rect"){
+                                    if(j.type === "rect" || j.type === "diamond"){
                                         if(j.id === item.target){
                                             that.stepsList.push({
                                                 title:j.label
@@ -172,7 +178,11 @@
                     that.init()
                     that.stepsList.forEach((item,index) =>{  //根据当前节点设置步骤条的值
                         if(item.title === that.NoRow[that.enableData.Node]){
-                            that.active = index
+                            if(item.type === "triangle"){
+                                that.active = 0
+                            }else{
+                                that.active = index + 1
+                            }
                         }
                     })
                   }else{
@@ -210,7 +220,7 @@
                 that.ProcessStructure.nodes.forEach(item =>{ //解析工作流 获取当前节点的id
                   if(item.label === that.NoRow.Node){
                     nodeId = item.id
-                    that.ProcessStructure.edges.forEach(item =>{ //获取当前节点的目标节点
+                    that.ProcessStructure.edges.forEach(item =>{  //获取当前节点的目标节点
                       if(item.source === nodeId){
                         targetIdList.push(item.target)
                       }
@@ -221,28 +231,73 @@
                 //获取所有目标节点
                 that.ProcessStructure.nodes.forEach(item =>{
                   targetIdList.forEach(j =>{
-                      if(item.type != "diamond"){  //判断是否到任务阶段
-                          if(item.id === j){
-                            console.log(item)
-                          if(item.type != "triangle"){
-                            that.handleBtns.push(item)
+                    if(that.enableData.FlowType){
+                        if(that.enableData.FlowType === "task"){
+                            if(item.type != "rect"){  //判断是否到任务阶段
+                                if(item.id === j){
+                                    if(item.type != "triangle"){
+                                        that.handleBtns.push(item)
+                                    }
+                                }
+                            }
+                        }else if(that.enableData.FlowType === "plan"){
+                          if(item.type != "diamond"){  //判断是否到任务阶段
+                            if(item.id === j){
+                                if(item.type != "triangle"){
+                                    that.handleBtns.push(item)
+                                }
+                            }
                           }
                         }
-                      }
+                    }else{
+                        if(item.id === j){
+                            if(item.type != "triangle"){
+                                that.handleBtns.push(item)
+                            }
+                        }
+                    }
                   })
                 })
-                //判断目标节点是否有驳回子节点，有的话就渲染成按钮
+                //判断默认类型的目标节点是否有驳回子节点，有的话就渲染成按钮
                 that.ProcessStructure.edges.forEach(item =>{
                   targetIdList.forEach(j =>{
-                    if(item.source === j){ //获取目标节点的目标节点Id
-                      that.ProcessStructure.nodes.forEach(b =>{
-                        if(b.id === item.target){
-                          if(b.type === "triangle"){
-                            that.handleBtns.push(b)
-                          }
-                        }
-                      })
+                    if(item.source === j) { //获取目标节点的目标节点
+                        that.ProcessStructure.nodes.forEach(b => {
+                            if (b.id === item.target) { //判断获取子节点
+                                if (!that.enableData.FlowType) {
+                                    if (b.type === "triangle") {
+                                        that.handleBtns.push(b)
+                                    }
+                                }
+                            }
+                            if(b.id === item.source){
+                                if (that.enableData.FlowType) {
+                                    if(that.enableData.FlowType === "plan"){
+                                        if (b.type === "rect") {
+                                            that.ProcessStructure.nodes.forEach(c => {
+                                                if(c.id === item.target){
+                                                    if (c.type === "triangle") {
+                                                        that.handleBtns.push(c)
+                                                    }
+                                                }
+                                            })
+                                        }
+                                    }else if(that.enableData.FlowType === "task"){
+                                        if (b.type === "diamond") {
+                                            that.ProcessStructure.nodes.forEach(c => {
+                                                if(c.id === item.target){
+                                                    if (c.type === "triangle") {
+                                                        that.handleBtns.push(c)
+                                                    }
+                                                }
+                                            })
+                                        }
+                                    }
+                                }
+                            }
+                        })
                     }
+
                   })
                 })
             },
@@ -251,10 +306,43 @@
                 let that = this
                 that.ProcessStructure.nodes.forEach(item =>{
                     if(item.id === row.id){
-                        if(item.submitFieldList.length > 0){ //判断是否有提交字段
-                            that.approveDialogVisible = true
-                            that.approveNodeRow = row
-                            that.submitField = {}
+                        if(item.submitFieldList){ //判断是否有提交字段
+                            if(item.submitFieldList.length > 0){
+                                that.approveDialogVisible = true
+                                that.approveNodeRow = row
+                                that.submitField = {}
+                            }else{
+                                that.$confirm('您确定要进行'+ row.label +'操作吗？', '提示', {
+                                  distinguishCancelAndClose:true,
+                                  type: 'warning'
+                                }).then(()  => {
+                                  var params = {
+                                    tableName:that.enableData.tableName,
+                                    ID:that.NoRow.ID,
+                                    [that.enableData.Status]:item.state,
+                                    [that.enableData.Node]:item.label,
+                                  }
+                                  that.axios.put("/api/CUID",that.qs.stringify(params)).then(res =>{
+                                    if(res.data.code === "200"){
+                                      that.$message({
+                                        type: 'success',
+                                        message: res.data.message
+                                      });
+                                        that.createLife(item.state,item.label) //添加审批记录
+                                        that.getTableData() //更新计划表
+                                        that.getRowInfo() //更新当前单号基本信息
+                                        that.getLife() //更新审批表
+                                    }
+                                  },res =>{
+                                    console.log("请求错误")
+                                  })
+                                }).catch(() => {
+                                  this.$message({
+                                    type: 'info',
+                                    message: '已取消操作'
+                                  });
+                                });
+                            }
                         }else{
                             that.$confirm('您确定要进行'+ row.label +'操作吗？', '提示', {
                               distinguishCancelAndClose:true,

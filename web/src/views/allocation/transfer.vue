@@ -1,152 +1,40 @@
 <template>
-  <el-row :gutter="15">
-    <el-col :span="24">
-      <el-form :inline="true">
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="调拨单号">
-              <el-input v-model="TableData.searchField.No" placeholder="请输入调拨单号" size="mini" style="width: 150px;"></el-input>
-            </el-form-item>
-            <el-form-item label="设备编号">
-              <el-input v-model="TableData.searchField.EquipmentCode" placeholder="请输入设备编号" size="mini" style="width: 150px;"></el-input>
-            </el-form-item>
-            <el-form-item label="设备名称">
-              <el-input v-model="TableData.searchField.EquipmentName" placeholder="请输入设备名称" size="mini" style="width: 150px;"></el-input>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" size="mini" @click="getTableData">查询</el-button>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-      <div class="platformContainer">
-        <el-table :data="TableData.data" border size="mini" :header-cell-style="{ 'background':'#F5F7FA' }" ref="multipleTable">
-          <el-table-column prop="No" label="调拨单号">
-            <template slot-scope="scope">
-              <a href="javascript:;" style="color:#2196F3;" @click="seeDetails(scope.row)">{{ scope.row.No }}</a>
-            </template>
-          </el-table-column>
-          <el-table-column prop="EquipmentName" label="设备名称"></el-table-column>
-          <el-table-column prop="EquipmentCode" label="设备编号"></el-table-column>
-          <el-table-column prop="Specs" label="规格型号"></el-table-column>
-          <el-table-column prop="AllocationDepartment" label="调拨部门"></el-table-column>
-          <el-table-column prop="AddressOut" label="调出地点"></el-table-column>
-          <el-table-column prop="AddressInto" label="调入地点"></el-table-column>
-          <el-table-column prop="Comment" label="调拨原因"></el-table-column>
-          <el-table-column prop="Time" label="申请时间"></el-table-column>
-          <el-table-column prop="User" label="申请人"></el-table-column>
-          <el-table-column prop="Node" label="当前节点"></el-table-column>
-          <el-table-column prop="Status" label="审批状态">
-            <template slot-scope="scope">
-              <div v-for="(item,index) in TableData.ProcessStructure.nodes" :key="index">
-                <span class="btn-block color-white" v-if="item.state === scope.row.Status" :style="{ background:item.stateColor }">{{ scope.row.Status }}</span>
-              </div>
-            </template>
-          </el-table-column>
-        </el-table>
-        <div class="paginationClass">
-          <el-pagination background  layout="total, sizes, prev, pager, next, jumper"
-           :total="TableData.total"
-           :current-page="TableData.offset"
-           :page-sizes="[10,20,30,40,50]"
-           :page-size="TableData.limit"
-           @size-change="handleSizeChange"
-           @current-change="handleCurrentChange">
-          </el-pagination>
-        </div>
-        <el-dialog title="调拨单" :visible.sync="TableData.detailsDialogVisible" width="60%" :append-to-body="true">
-          <el-form :inline="true">
-            <el-form-item v-for="(item,index) in TableData.handleBtns" :key="index">
-              <el-button type="primary" size="mini" @click="approval(item)">{{ item.label }}</el-button>
-            </el-form-item>
-          </el-form>
-          <p class="marginBottom">基本信息</p>
-          <table class="elementTable text-size-14 marginBottom">
-            <tr>
-              <td>设备名称</td>
-              <td>{{ TableData.detailsInfo.EquipmentName }}</td>
-              <td>设备编号</td>
-              <td>{{ TableData.detailsInfo.EquipmentCode }}</td>
-              <td>规格型号</td>
-              <td>{{ TableData.detailsInfo.Specs }}</td>
-            </tr>
-            <tr>
-              <td>调拨部门</td>
-              <td>{{ TableData.detailsInfo.AllocationDepartment }}</td>
-              <td>调出地点</td>
-              <td>{{ TableData.detailsInfo.AddressOut }}</td>
-              <td>调入地点</td>
-              <td>{{ TableData.detailsInfo.AddressInto }}</td>
-            </tr>
-            <tr>
-              <td>调拨原因</td>
-              <td>{{ TableData.detailsInfo.Comment }}</td>
-              <td>申请时间</td>
-              <td>{{ TableData.detailsInfo.Time }}</td>
-              <td>申请人</td>
-              <td>{{ TableData.detailsInfo.User }}</td>
-            </tr>
-            <tr>
-              <td>当前节点</td>
-              <td>{{ TableData.detailsInfo.Node }}</td>
-              <td>审批状态</td>
-              <td colspan="3">
-                <div v-for="(item,index) in TableData.ProcessStructure.nodes" :key="index">
-                  <span class="btn-block color-white" v-if="item.state === TableData.detailsInfo.Status" :style="{ background:item.stateColor }">{{ TableData.detailsInfo.Status }}</span>
-                </div>
-              </td>
-            </tr>
-          </table>
-          <p class="marginBottom">审批信息</p>
-          <el-table class="marginBottom" :data="TableData.LifeTableData" border size="mini" :header-cell-style="{ 'background':'#F5F7FA' }">
-            <el-table-column prop="No" label="单号"></el-table-column>
-            <el-table-column prop="Time" label="操作时间"></el-table-column>
-            <el-table-column prop="User" label="操作人"></el-table-column>
-            <el-table-column prop="Node" label="当前节点"></el-table-column>
-            <el-table-column prop="Status" label="当前状态"></el-table-column>
-            <el-table-column prop="Content" label="操作内容"></el-table-column>
-          </el-table>
-          <p class="marginBottom">审批流程</p>
-          <div id="container" style="position:relative;width: 100%;height: 300px;"></div>
-          <span slot="footer" class="dialog-footer">
-            <el-button @click="TableData.detailsDialogVisible = false">取 消</el-button>
-          </span>
-        </el-dialog>
-      </div>
-    </el-col>
-  </el-row>
+  <FlowInstance :enableData="transferData"></FlowInstance>
 </template>
 
 <script>
-  import G6 from '@antv/g6';
   var moment = require('moment');
+  import FlowInstance from "../../components/FlowInstance.vue"
   export default {
     name: "transfer",
+    components:{ FlowInstance },
     data(){
       return{
-        TableData:{
+        transferData:{
+          workflowID:"3",
           tableName:"Allocation",
-          workflow:"调拨转移",
-          ProcessStructure:"",
-          data:[],
-          limit: 10,
-          offset: 1,
-          total: 0,
-          searchField:{
-            No:"",
-            EquipmentCode:"",
-            EquipmentName:"",
-          },
-          fieldModel:{
-            ID:"",
-            No:"",
-            EquipmentCode:"",
-            EquipmentName:"",
-          },
-          detailsDialogVisible:false,
-          detailsInfo:{},
-          handleBtns:[],
-          LifeTableData:[]
+          tableColumn:[
+            {label:"计划单号",prop:"No"},
+            {label:"流程ID",prop:"TID"},
+            {label:"设备编号",prop:"EquipmentCode"},
+            {label:"设备名称",prop:"KeepEquipment"},
+            {label:"调拨部门",prop:"AllocationDepartment"},
+            {label:"调出地点",prop:"AddressOut"},
+            {label:"调入地点",prop:"AddressInto"},
+            {label:"调拨原因",prop:"Comment"},
+            {label:"申请人",prop:"User"},
+            {label:"创建时间",prop:"Time"},
+            {label:"当前节点",prop:"Node"},
+            {label:"当前状态",prop:"Status"},
+          ],
+          FlowType:"", //默认为空代表不区分流程是计划还是任务 task任务 plan计划
+          No:"No",
+          EquipmentCode:"EquipmentCode",
+          EquipmentName:"EquipmentName",
+          Time:"FoundTime",
+          User:"PlanUser",
+          Node:"Node",
+          Status:"Status",
         },
         graph:null,
       }

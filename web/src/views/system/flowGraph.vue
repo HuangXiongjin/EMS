@@ -165,10 +165,10 @@
         clickNode:{},
         clickModel:{},
         group:[
-          {label:"开始阶段",class:"startNode",type:"ellipse"},
-          {label:"计划阶段",class:"rectNode",type:"rect"},
-          {label:"任务阶段",class:"diamondNode",type:"diamond"},
-          {label:"驳回",class:"triangleNode",type:"triangle"},
+          {label:"开始",class:"startNode",type:"ellipse"},
+          {label:"过程",class:"rectNode",type:"rect"},
+          {label:"分支",class:"diamondNode",type:"diamond"},
+          {label:"驳回",class:"rejectNode",type:"image"},
           {label:"结束",class:"circleNode",type:"circle"},
         ],
         nodeType:"", //存拖动的元素类型
@@ -371,7 +371,7 @@
                 },
               );
             },
-          },'line');
+          },'polyline');
           //点击节点添加连接线
           // 注册自定义行为:单击两个结束节点添加边缘
           G6.registerBehavior('click-add-edge', {
@@ -473,18 +473,15 @@
               addEdge: ['click-add-edge'],
               remove: ['click-remove'],
             },
-            layout: {
-              type: 'dagre',
-              nodesepFunc: d => {
-                if (d.id === '3') {
-                  return 500;
-                }
-                return 50;
-              },
-              rankdir: 'LR',
-              ranksep: 70,
-              controlPoints: true
-            },
+            // layout: {
+            //   type: 'dagre', //层次dagre 随机random 辐射状radial 高维数据降维算法mds 环形circular 力导force 格子Grid 同心圆Concentric
+            //   rankdir: 'LR', //TB BT LR RL
+            //   align: 'UL',  //UL UR DL DR
+            //   edgesep: 0,  //同层边分间距
+            //   ranksep: 70, //节点分层间距
+            //   nodesep:70, //同层节点间距
+            //   preventOverlap:true, //防止节点重叠
+            // },
             defaultNode: {
               size: [150, 80],
               style: {
@@ -524,34 +521,15 @@
             const {item, target} = evt
             const targetType = target.get('type')
             const name = target.get('name')
-            if(targetType === 'text' || targetType === 'rect' || targetType === 'path' || targetType === 'circle' || targetType === 'ellipse'){
+            if(targetType === 'text' || targetType === 'rect' || targetType === 'path' || targetType === 'circle' || targetType === 'ellipse' || targetType === 'image'){
               that.clickNode = evt.item
               that.clickModel = evt.item.getModel()
+                console.log(that.clickModel)
               if(that.clickModel.hasOwnProperty("submitFieldList")){
                 that.submitFieldList = that.clickModel.submitFieldList
               }else{
                 that.submitFieldList = []
               }
-              // if(that.clickModel.type === "triangle"){
-              //   that.showRefuseType = true
-              //   var nodes = this.graph.save().nodes
-              //   that.RefuseNodes = []
-              //   that.RefuseNode = ""
-              //   //循环所有节点内容，渲染下拉框数据
-              //   nodes.forEach(item =>{
-              //     if(item.type != "triangle"){
-              //       that.RefuseNodes.push(item)
-              //     }
-              //   })
-              //   //判断是否有驳回阶段，有则为下拉框赋值
-              //   if(that.clickModel.RefuseNodeId){
-              //     that.RefuseNode = that.clickModel.RefuseNodeId
-              //   }else{
-              //     that.RefuseNode = ""
-              //   }
-              // }else{
-              //   that.showRefuseType = false
-              // }
             }
           })
         })
@@ -610,20 +588,6 @@
           });
         }
       },
-      // changeRefuseNode(){
-      //   let that = this
-      //   if(that.clickModel.label){
-      //     var nodes = this.graph.save().nodes
-      //     nodes.forEach(item =>{
-      //       if(item.id === that.RefuseNode){
-      //         that.graph.update(that.clickModel.id,{
-      //           RefuseNodeId:that.RefuseNode,
-      //           RefuseNode:item.label,
-      //         });
-      //       }
-      //     })
-      //   }
-      // },
       onDragstart(e){
         this.nodeType = e.target.attributes.type.value
       },
@@ -639,14 +603,26 @@
       onDrop(e){  //在画布内松开鼠标 添加节点
         this.group.forEach(item =>{
           if(this.nodeType === item.type){
-            this.graph.addItem('node', {
-              x: e.offsetX,
-              y: e.offsetY,
-              id: Date.now().toString(),
-              label:item.label,
-              type:this.nodeType,
-              size:[80,80]
-            },true);
+              if(this.nodeType === "image"){
+                this.graph.addItem('node', {
+                  x: e.offsetX,
+                  y: e.offsetY,
+                  id: Date.now().toString(),
+                  label:item.label,
+                  type:this.nodeType,
+                  img:require("../../assets/img/reject.png"),
+                  size:[80,80]
+                },true);
+              }else{
+                this.graph.addItem('node', {
+                  x: e.offsetX,
+                  y: e.offsetY,
+                  id: Date.now().toString(),
+                  label:item.label,
+                  type:this.nodeType,
+                  size:[80,80]
+                },true);
+              }
           }
         })
       },
@@ -682,7 +658,7 @@
   .rectNode{
     display: inline-block;
     margin-right: 20px;
-    width: 80px;
+    width: 50px;
     height: 50px;
     line-height: 50px;
     text-align: center;
@@ -704,17 +680,16 @@
     -o-transform: rotateZ(45deg);
     cursor: pointer;
   }
-  .triangleNode{
+  .rejectNode{
     display: inline-block;
     margin-right: 20px;
-    width: 0;
-    height: 0;
-    line-height: 60px;
-    border-width: 0 40px 50px;
-    border-style: solid;
-    border-color: transparent transparent #9EC9FF;
-    position: relative;
-    white-space: nowrap;
+    width: 50px;
+    height: 50px;
+    background-image: url("../../assets/img/reject.png");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    border-radius: 8px;
+    vertical-align: middle;
     cursor: pointer;
   }
   .triangleNode span{
