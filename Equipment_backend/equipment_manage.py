@@ -3,7 +3,7 @@ import os
 import base64
 
 from MyQR import myqr
-from flask import Blueprint, request, send_from_directory
+from flask import Blueprint, request, send_from_directory, Flask
 
 from common.equipment_model import Equipment
 from common.system_model import db_session, AreaMaintain

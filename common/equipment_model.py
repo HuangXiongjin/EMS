@@ -67,6 +67,23 @@ class Equipment(Base):
     Picture = Column(Unicode(5120), nullable=True)
 
 
+class KeepProject(Base):
+    """设备保养项"""
+
+    __tablename__ = "KeepProject"
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    # 设备编号
+    EquipmentCode = Column(Unicode(128), nullable=True)
+    # 保养项目
+    KeepProject = Column(Unicode(256), nullable=True)
+    # 保养周期
+    Circle = Column(Unicode(128), nullable=True)
+    # 制定人
+    Name = Column(Unicode(128), nullable=True)
+    # 制定时间
+    Time = Column(Unicode(32), nullable=True, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+
+
 class Allocation(Base):
     """设备调拨"""
     __tablename__ = "Allocation"
