@@ -105,19 +105,19 @@
                   <!--</el-form-item>-->
                   <el-form-item label="额外提交参数">
                     <el-form class="clearfix">
-                      <el-form-item label="名称">
-                        <el-input v-model="submitField.label" size="mini"></el-input>
+                      <el-form-item>
+                        <el-input v-model="submitField.label" size="mini" placeholder="标题"></el-input>
                       </el-form-item>
-                      <el-form-item label="字段">
-                        <el-input v-model="submitField.prop" size="mini"></el-input>
+                      <el-form-item>
+                        <el-input v-model="submitField.prop" size="mini" placeholder="字段"></el-input>
                       </el-form-item>
                     </el-form>
                     <p class="clearfix text-right"><el-button size="mini" type="success" @click="saveSubmitField">保存添加</el-button></p>
                     <table class="elementTable text-size-14 text-center">
                       <tr>
                         <td>字段</td>
-                        <td>名称</td>
-                        <td>删除</td>
+                        <td>标题</td>
+                        <td></td>
                       </tr>
                       <tr v-for="(item,index) in submitFieldList" :key="index">
                         <td>{{ item.prop }}</td>
@@ -169,9 +169,10 @@
           {label:"过程",class:"rectNode",type:"rect"},
           {label:"分支",class:"diamondNode",type:"diamond"},
           {label:"驳回",class:"rejectNode",type:"image"},
+          {label:"中止",class:"terminateNode",type:"image"},
           {label:"结束",class:"circleNode",type:"circle"},
         ],
-        nodeType:"", //存拖动的元素类型
+        DragE:"", //存拖动的元素Dom
         // showRefuseType:false, // 是否显示驳回类型
         // RefuseNode:"", //选择驳回节点
         // RefuseNodes:[] //驳回时可选的节点数据
@@ -466,7 +467,7 @@
               default: [
                 'drag-canvas',
                 'zoom-canvas',
-                'click-select',
+                // 'click-select',
                 'drag-node',
               ],
               addNode: ['click-add-node'],
@@ -524,7 +525,6 @@
             if(targetType === 'text' || targetType === 'rect' || targetType === 'path' || targetType === 'circle' || targetType === 'ellipse' || targetType === 'image'){
               that.clickNode = evt.item
               that.clickModel = evt.item.getModel()
-                console.log(that.clickModel)
               if(that.clickModel.hasOwnProperty("submitFieldList")){
                 that.submitFieldList = that.clickModel.submitFieldList
               }else{
@@ -589,7 +589,7 @@
         }
       },
       onDragstart(e){
-        this.nodeType = e.target.attributes.type.value
+        this.DragE = e
       },
       onDragend(e){
         //console.log(e)
@@ -602,16 +602,39 @@
       },
       onDrop(e){  //在画布内松开鼠标 添加节点
         this.group.forEach(item =>{
-          if(this.nodeType === item.type){
-              if(this.nodeType === "image"){
+          if(this.DragE.target.attributes.type.value === item.type){
+              if(this.DragE.target.attributes.type.value === "image"){
+                  if(this.DragE.target.attributes.class.value === item.class && item.class === "rejectNode"){
+                      this.graph.addItem('node', {
+                      x: e.offsetX,
+                      y: e.offsetY,
+                      id: Date.now().toString(),
+                      label:item.label,
+                      type:this.DragE.target.attributes.type.value,
+                      img:require("../../assets/img/reject.png"),
+                      imgType:"reject",
+                      size:[80,80]
+                    },true);
+                  }else if(this.DragE.target.attributes.class.value === item.class && item.class === "terminateNode"){
+                    this.graph.addItem('node', {
+                      x: e.offsetX,
+                      y: e.offsetY,
+                      id: Date.now().toString(),
+                      label:item.label,
+                      type:this.DragE.target.attributes.type.value,
+                      img:require("../../assets/img/terminate.png"),
+                      imgType:"terminate",
+                      size:[80,80]
+                    },true);
+                  }
+              }else if(this.DragE.target.attributes.type.value === "ellipse"){
                 this.graph.addItem('node', {
                   x: e.offsetX,
                   y: e.offsetY,
                   id: Date.now().toString(),
                   label:item.label,
-                  type:this.nodeType,
-                  img:require("../../assets/img/reject.png"),
-                  size:[80,80]
+                  type:this.DragE.target.attributes.type.value,
+                  size:[120,70]
                 },true);
               }else{
                 this.graph.addItem('node', {
@@ -619,7 +642,7 @@
                   y: e.offsetY,
                   id: Date.now().toString(),
                   label:item.label,
-                  type:this.nodeType,
+                  type:this.DragE.target.attributes.type.value,
                   size:[80,80]
                 },true);
               }
@@ -686,6 +709,18 @@
     width: 50px;
     height: 50px;
     background-image: url("../../assets/img/reject.png");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    border-radius: 8px;
+    vertical-align: middle;
+    cursor: pointer;
+  }
+  .terminateNode{
+    display: inline-block;
+    margin-right: 20px;
+    width: 50px;
+    height: 50px;
+    background-image: url("../../assets/img/terminate.png");
     background-repeat: no-repeat;
     background-size: 100% 100%;
     border-radius: 8px;

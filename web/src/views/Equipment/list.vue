@@ -1,32 +1,46 @@
 <template>
   <el-row :gutter="15">
     <el-col :span="24" v-if="$route.name != 'EquipmentDetails'">
-      <el-form :inline="true">
-        <el-row>
-          <el-col :span="2">
-            <el-form-item label="查询方案："></el-form-item>
-          </el-col>
-          <el-col :span="22">
-            <el-form-item label="设备编号">
-              <el-input v-model="TableData.searchField.EquipmentCode" placeholder="请输入设备编号" size="mini" style="width: 150px;"></el-input>
-            </el-form-item>
-            <el-form-item label="设备名称">
-              <el-input v-model="TableData.searchField.EquipmentName" placeholder="请输入设备名称" size="mini" style="width: 150px;"></el-input>
-            </el-form-item>
-            <el-form-item label="设备等级">
-              <el-input v-model="TableData.searchField.Grade" placeholder="请输入设备等级" size="mini" style="width: 150px;"></el-input>
-            </el-form-item>
-            <el-form-item label="设备状态">
-              <el-input v-model="TableData.searchField.Status" placeholder="请输入设备状态" size="mini" style="width: 150px;"></el-input>
-            </el-form-item>
+      <el-row>
+        <el-col :span="24">
+          <el-form :inline="true">
             <el-form-item>
-              <el-button type="primary" size="mini" @click="getTableData">查询</el-button>
+              <el-radio-group v-model="TableData.searchField.EquipmentType" size="mini" @change="getTableData">
+                <el-radio-button label="冷却系统"></el-radio-button>
+                <el-radio-button label="照明系统"></el-radio-button>
+                <el-radio-button label="空调系统"></el-radio-button>
+              </el-radio-group>
             </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
+          </el-form>
+        </el-col>
+      </el-row>
       <div class="platformContainer">
         <el-form :inline="true">
+          <el-form-item label="设备编号">
+            <el-input v-model="TableData.searchField.EquipmentCode" placeholder="请输入设备编号" size="mini" style="width: 150px;"></el-input>
+          </el-form-item>
+          <el-form-item label="设备名称">
+            <el-input v-model="TableData.searchField.EquipmentName" placeholder="请输入设备名称" size="mini" style="width: 150px;"></el-input>
+          </el-form-item>
+          <el-form-item label="设备等级">
+            <el-select v-model="TableData.searchField.Grade" clearable placeholder="请选择设备等级" size="mini" style="width: 150px;">
+              <el-option label="A(关键)" value="A"></el-option>
+              <el-option label="B(重要)" value="B"></el-option>
+              <el-option label="C(一般)" value="C"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="设备状态">
+            <el-select v-model="TableData.searchField.Status" clearable placeholder="请选择设备状态" size="mini" style="width: 150px;">
+              <el-option label="正常" value="正常"></el-option>
+              <el-option label="带病运行" value="带病运行"></el-option>
+              <el-option label="闲置" value="闲置"></el-option>
+              <el-option label="故障" value="故障"></el-option>
+              <el-option label="报废" value="报废"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button size="mini" @click="getTableData">查询</el-button>
+          </el-form-item>
           <el-form-item>
             <el-button type="primary" size="mini" @click="add">添加设备</el-button>
           </el-form-item>
@@ -34,8 +48,8 @@
         <el-table :data="TableData.data" border size="mini" :header-cell-style="{ 'background':'#F5F7FA' }" ref="multipleTable" @select="handleSelect" @selection-change="handleSelectionChange" @row-click="handleRowClick">
           <el-table-column prop="Picture" label="图片">
             <template slot-scope="scope">
-              <el-image v-if="scope.row.Picture" style="height: 100%;" :src="'/api/upload_picture?EquipmentCode=' + scope.row.EquipmentCode + '&t=' + Math.random()"></el-image>
-              <el-image v-if="!scope.row.Picture" style="width: 100%;text-align: center;">
+              <el-image v-if="scope.row.Picture" style="height: 100%;cursor: pointer;" :src="'/api/upload_picture?EquipmentCode=' + scope.row.EquipmentCode + '&t=' + Math.random()" @click="uploadImg(scope.$index, scope.row)"></el-image>
+              <el-image v-if="!scope.row.Picture" style="width: 100%;text-align: center;cursor: pointer;" @click="uploadImg(scope.$index, scope.row)">
                 <div slot="error" style="width: 100%;">
                   <i class="el-icon-picture-outline text-size-24"></i>
                 </div>
@@ -86,9 +100,8 @@
           <!--<el-table-column prop="NetValue" label="当前净值"></el-table-column>-->
           <!--<el-table-column prop="TechnicalParameter" label="技术参数"></el-table-column>-->
           <!--<el-table-column prop="Comment" label="备注"></el-table-column>-->
-          <el-table-column label="操作" fixed="right" width="240">
+          <el-table-column label="操作" fixed="right" width="150">
             <template slot-scope="scope">
-              <el-button size="mini" @click="uploadImg(scope.$index, scope.row)">设备图</el-button>
               <el-button size="mini" type="warning" @click="Edit(scope.$index, scope.row)">编辑</el-button>
               <el-button size="mini" type="danger" @click="Delete(scope.$index, scope.row)">删除</el-button>
             </template>
@@ -119,7 +132,7 @@
               <el-input v-model="TableData.fieldModel.LeaveFactoryCode" size="small"></el-input>
             </el-form-item>
             <el-form-item label="设备类别">
-              <el-input v-model="TableData.fieldModel.EquipmentType" size="small"></el-input>
+              <el-input v-model="TableData.fieldModel.EquipmentType" size="small" :disabled="true"></el-input>
             </el-form-item>
             <el-form-item label="品牌">
               <el-input v-model="TableData.fieldModel.Brand" size="small"></el-input>
@@ -197,8 +210,8 @@
             <el-button type="primary" @click="save">保 存</el-button>
           </span>
         </el-dialog>
-        <el-dialog title="设备图片上传" :visible.sync="TableData.uploadDialogVisible" width="60%" :append-to-body="true">
-          <el-form :inline="true" label-width="80px">
+        <el-dialog title="设备图片上传" :visible.sync="TableData.uploadDialogVisible" width="40%" :append-to-body="true">
+          <el-form label-width="80px">
             <el-form-item label="设备编号">
               <el-input v-model="TableData.uploadEquipmentRow.EquipmentCode" size="small" :disabled="true"></el-input>
             </el-form-item>
@@ -237,6 +250,7 @@
           searchField:{
             EquipmentCode:"",
             EquipmentName:"",
+            EquipmentType:"冷却系统",
             Grade:"",
             Status:"",
           },
@@ -326,6 +340,7 @@
       add(){
         this.TableData.dialogVisible = true
         this.TableData.dialogTitle = "添加"
+        this.TableData.fieldModel.EquipmentType = this.TableData.searchField.EquipmentType
       },
       uploadImg(index,row){
         this.TableData.uploadDialogVisible = true

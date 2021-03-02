@@ -177,12 +177,25 @@
                     that.getNodeBtn()
                     that.init()
                     that.stepsList.forEach((item,index) =>{  //根据当前节点设置步骤条的值
-                        if(item.title === that.NoRow[that.enableData.Node]){
-                            if(item.type === "triangle"){
-                                that.active = 0
-                            }else{
-                                that.active = index + 1
-                            }
+                        if(item.title === that.NoRow[that.enableData.Node]){ //判断当前节点在步骤条的位置
+                            that.active = index + 1
+                        }else{  //判断不在步骤条的位置，即为图片的节点
+                            that.ProcessStructure.nodes.forEach(j =>{
+                                if(j.label === that.NoRow[that.enableData.Node]){ //获取当前节点的id j.id
+                                    that.ProcessStructure.edges.forEach(g =>{
+                                        if(g.source === j.id){ //获取当前节点的父节点id g.source
+                                            that.ProcessStructure.nodes.forEach(n =>{
+                                                if(n.id === g.target){
+                                                    if(item.title === n.label){
+                                                        that.active = index
+                                                    }
+                                                }
+                                            })
+
+                                        }
+                                    })
+                                }
+                            })
                         }
                     })
                   }else{
@@ -198,6 +211,8 @@
                 var params = {
                   tableName:"Life",
                   No:that.NoRow[that.enableData.No],
+                  RID:that.enableData.workflowID,
+                  searchModes:"精确查询"
                 }
                 this.axios.get("/api/CUID",{
                   params: params
@@ -217,7 +232,7 @@
                 var that = this
                 var nodeId = "" //当前节点的id
                 var targetIdList = [] //目标节点Id列表
-                that.ProcessStructure.nodes.forEach(item =>{ //解析工作流 获取当前节点的id
+                that.ProcessStructure.nodes.forEach(item =>{ //获取当前节点的id
                   if(item.label === that.NoRow.Node){
                     nodeId = item.id
                     that.ProcessStructure.edges.forEach(item =>{  //获取当前节点的目标节点
@@ -231,73 +246,27 @@
                 //获取所有目标节点
                 that.ProcessStructure.nodes.forEach(item =>{
                   targetIdList.forEach(j =>{
-                    if(that.enableData.FlowType){
-                        if(that.enableData.FlowType === "task"){
-                            if(item.type != "rect"){  //判断是否到任务阶段
-                                if(item.id === j){
-                                    if(item.type != "triangle"){
-                                        that.handleBtns.push(item)
-                                    }
-                                }
-                            }
-                        }else if(that.enableData.FlowType === "plan"){
-                          if(item.type != "diamond"){  //判断是否到任务阶段
-                            if(item.id === j){
-                                if(item.type != "triangle"){
-                                    that.handleBtns.push(item)
-                                }
-                            }
-                          }
-                        }
-                    }else{
-                        if(item.id === j){
-                            if(item.type != "triangle"){
+                    if(item.id === j){
+                        if(item.type != "circle"){
+                            if(item.type != "image"){
                                 that.handleBtns.push(item)
                             }
                         }
                     }
                   })
                 })
-                //判断默认类型的目标节点是否有驳回子节点，有的话就渲染成按钮
+                //判断默认类型的目标节点是否有驳回或者中止子节点，有的话就渲染成按钮
                 that.ProcessStructure.edges.forEach(item =>{
                   targetIdList.forEach(j =>{
                     if(item.source === j) { //获取目标节点的目标节点
                         that.ProcessStructure.nodes.forEach(b => {
-                            if (b.id === item.target) { //判断获取子节点
-                                if (!that.enableData.FlowType) {
-                                    if (b.type === "triangle") {
-                                        that.handleBtns.push(b)
-                                    }
-                                }
-                            }
-                            if(b.id === item.source){
-                                if (that.enableData.FlowType) {
-                                    if(that.enableData.FlowType === "plan"){
-                                        if (b.type === "rect") {
-                                            that.ProcessStructure.nodes.forEach(c => {
-                                                if(c.id === item.target){
-                                                    if (c.type === "triangle") {
-                                                        that.handleBtns.push(c)
-                                                    }
-                                                }
-                                            })
-                                        }
-                                    }else if(that.enableData.FlowType === "task"){
-                                        if (b.type === "diamond") {
-                                            that.ProcessStructure.nodes.forEach(c => {
-                                                if(c.id === item.target){
-                                                    if (c.type === "triangle") {
-                                                        that.handleBtns.push(c)
-                                                    }
-                                                }
-                                            })
-                                        }
-                                    }
+                            if (b.id === item.target) { //判断获取目标节点子节点
+                                if (b.type === "image") {
+                                    that.handleBtns.push(b)
                                 }
                             }
                         })
                     }
-
                   })
                 })
             },
@@ -307,7 +276,7 @@
                 that.ProcessStructure.nodes.forEach(item =>{
                     if(item.id === row.id){
                         if(item.submitFieldList){ //判断是否有提交字段
-                            if(item.submitFieldList.length > 0){
+                            if(item.submitFieldList.length > 0){  //检查有额外提交字段 弹出提交表单
                                 that.approveDialogVisible = true
                                 that.approveNodeRow = row
                                 that.submitField = {}
@@ -419,6 +388,7 @@
                 var params = {
                   tableName:"Life",
                   No:this.NoRow.No,
+                  RID:this.enableData.workflowID,
                   Time:moment().format("YYYY-MM-DD HH:ss:mm"),
                   User:this.$store.state.UserName,
                   Node:label,
@@ -482,7 +452,7 @@
                         },
                       );
                     },
-                  },'line');
+                  },'polyline');
                   const width = document.getElementById('container').scrollWidth;
                   const height = document.getElementById('container').scrollHeight;
                   that.toolbar = new G6.ToolBar()

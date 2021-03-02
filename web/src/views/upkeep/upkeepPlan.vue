@@ -31,7 +31,6 @@
                       {label:"当前节点",prop:"Node"},
                       {label:"当前状态",prop:"Status"},
                     ],
-                    FlowType:"plan", //默认为空代表不区分流程是计划还是任务 task任务 plan计划
                     No:"No",
                     EquipmentCode:"EquipmentCode",
                     EquipmentName:"KeepEquipment",

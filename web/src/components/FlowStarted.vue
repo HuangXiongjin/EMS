@@ -170,6 +170,7 @@
                 var params = {
                   tableName:"Life",
                   No:that.submitField[that.enableData.No],
+                  RID:that.enableData.workflowID,
                   Time:moment().format("YYYY-MM-DD HH:ss:mm"),
                   User:that.$store.state.UserName,
                   Node:that.flowNode.label,
