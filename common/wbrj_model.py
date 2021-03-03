@@ -4,26 +4,26 @@ from sqlalchemy import Column, Integer, Unicode
 
 from common.system_model import Base, engine
 
-#
-# class KeepRecord(Base):
-#     """保养记录"""
-#     __tablename__ = 'KeepRecord'
-#
-#     ID = Column(Integer, autoincrement=True, primary_key=True)
-#     # 工单号
-#     No = Column(Unicode(256), nullable=False)
-#     # 设备号
-#     EquipmentCode = Column(Unicode(256), nullable=True)
-#     # 姓名
-#     Name = Column(Unicode(32), nullable=True)
-#     # 保养材料
-#     Material = Column(Unicode(512), nullable=True)
-#     # 保养项目
-#     KeepProject = Column(Unicode(1024), nullable=True)
-#     # 开始时间
-#     StartTime = Column(Unicode(32), nullable=True, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-#     # 结束时间
-#     EndTime = Column(Unicode(32), nullable=True, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+
+class KeepRecord(Base):
+    """保养记录"""
+    __tablename__ = 'KeepRecord'
+
+    ID = Column(Integer, autoincrement=True, primary_key=True)
+    # 工单号
+    No = Column(Unicode(256), nullable=False)
+    # 设备号
+    EquipmentCode = Column(Unicode(256), nullable=True)
+    # 姓名
+    Name = Column(Unicode(32), nullable=True)
+    # 保养材料
+    Material = Column(Unicode(512), nullable=True)
+    # 保养项目
+    KeepProject = Column(Unicode(1024), nullable=True)
+    # 开始时间
+    StartTime = Column(Unicode(32), nullable=True, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    # 结束时间
+    EndTime = Column(Unicode(32), nullable=True, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
 
 class KeepPlan(Base):
@@ -63,12 +63,8 @@ class KeepPlan(Base):
     Status = Column(Unicode(64), nullable=True)
     # 接收人
     Receiver = Column(Unicode(64), nullable=True)
-    # 工单状态（待接单-已接单-已完成）
+    # 工单状态（待审核-待分配-待执行）
     WorkStatus = Column(Unicode(64), nullable=True)
-    # 开始时间
-    StartTime = Column(Unicode(32), nullable=True, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-    # 结束时间
-    EndTime = Column(Unicode(32), nullable=True, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     # 备注
     Comment = Column(Unicode(128), nullable=True)
 
