@@ -29,25 +29,35 @@ def return_img_stream(img_local_path):
 def equipment_tree():
     """设备分类树操作"""
     if request.method == 'GET':
-        factory = db_session.query(AreaMaintain).first()
-        sql = "select Position from Equipment"
+        # factory = db_session.query(AreaMaintain).first()
+        sql = "select EquipmentType from Equipment"
         parent_tags = db_session.execute(sql).fetchall()
         tags_list = set(item[0] for item in parent_tags)
+        query_data = db_session.query(Equipment.Position).all()
+        parent_tag2 = set(item[0] for item in query_data)
         children = []
         i = 1
         for item in tags_list:
             # 通过一级节点获取所有对应节点下的值
             children2 = []
             children1 = {"id": i, "label": item, "children": children2}
-            query_data = db_session.query(Equipment).filter_by(Position=item).all()
-            # parent_tag2 = set(item.ParentTag for item in query_data)
+            ii = str(i) + '1'
             i += 1
-            for data in query_data:
-                rank2_data = {"id": data.EquipmentCode, "label": data.EquipmentName, "type": "设备"}
-                children2.append(rank2_data)
+            for data in parent_tag2:
+                # 通过二级节点获取所对应的值
+                children4 = []
+                children3 = {"id": ii, "label": data, "children": children4}
+                result_data = db_session.query(Equipment).filter_by(EquipmentType=item, Position=data).all()
+                if len(result_data) != 0:
+                    for result in result_data:
+                        rank3_data = {"label": result.EquipmentName, "value": result.EquipmentCode}
+                        children4.append(rank3_data)
+                    children2.append(children3)
+                    ii = int(ii) + 1
             children.append(children1)
-        tree = [{"label": factory.AreaName, "children": children}]
-        return json.dumps({'code': '1000', 'msg': '成功', 'data': tree}, cls=MyEncoder, ensure_ascii=False)
+        # tree = [{"label": factory.AreaName, "children": children}]
+        return json.dumps({'code': '1000', 'msg': '成功', 'data': children}, cls=MyEncoder, ensure_ascii=False)
+
 
 
 @equipment_management.route('/qrcode', methods=['POST'])
