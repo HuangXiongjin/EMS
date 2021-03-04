@@ -74,7 +74,7 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    name: 'Index',
+    name: 'system',
     meta:{ title:'系统管理' },
     redirect:'/home',
     component: Index,
@@ -98,7 +98,7 @@ const routes = [
   },
   {
     path: '/',
-    name: 'Index',
+    name: 'Equipment',
     meta:{ title:'设备管理' },
     component: Index,
     redirect:'/home', //index主页默认加载home页面
@@ -115,7 +115,7 @@ const routes = [
   },
   {
     path: '/',
-    name: 'Index',
+    name: 'allocation',
     meta:{ title:'设备处置' },
     component: Index,
     redirect:'/home',
@@ -128,7 +128,7 @@ const routes = [
   },
   {
     path: '/',
-    name: 'Index',
+    name: 'maintain',
     meta:{ title:'维修管理' },
     component: Index,
     redirect:'/home',
@@ -142,19 +142,19 @@ const routes = [
   },
   {
     path: '/',
-    name: 'Index',
+    name: 'upkeep',
     meta:{ title:'保养管理' },
     component: Index,
     redirect:'/home',
     children:[
       {path:'/upkeepStandard',name:'upkeepStandard',meta:{ title:'保养标准',type:"保养管理"},component:upkeepStandard},
-      {path:'/upkeepPlan',name:'upkeepPlan',meta:{ title:'保养计划',type:"保养管理"},component:upkeepPlan},
-      {path:'/upkeepTask',name:'upkeepTask',meta:{ title:'保养任务',type:"保养管理"},component:upkeepTask},
+      {path:'/upkeepPlan',name:'upkeepPlan',meta:{ title:'制定保养计划',type:"保养管理"},component:upkeepPlan},
+      {path:'/upkeepTask',name:'upkeepTask',meta:{ title:'保养计划管理',type:"保养管理"},component:upkeepTask},
     ]
   },
   {
     path: '/',
-    name: 'Index',
+    name: 'inspection',
     meta:{ title:'点检巡检' },
     component: Index,
     redirect:'/home',
@@ -168,7 +168,7 @@ const routes = [
   },
   {
     path: '/',
-    name: 'Index',
+    name: 'spareParts',
     meta:{ title:'备品备件' },
     component: Index,
     redirect:'/home',
@@ -182,7 +182,7 @@ const routes = [
   },
   {
     path: '/',
-    name: 'Index',
+    name: 'monitoring',
     meta:{ title:'设备监控' },
     component: Index,
     redirect:'/home',
@@ -193,7 +193,7 @@ const routes = [
   },
   {
     path: '/',
-    name: 'Index',
+    name: 'statistics',
     meta:{ title:'统计分析' },
     component: Index,
     redirect:'/home',
@@ -221,5 +221,9 @@ const routes = [
 const router = new VueRouter({
   routes
 })
+const originalPush = VueRouter.prototype.push
+   VueRouter.prototype.push = function push(location) {
+   return originalPush.call(this, location).catch(err => err)
+}
 
 export default router

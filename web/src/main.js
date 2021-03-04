@@ -11,6 +11,7 @@ import qs from 'qs';
 import VCharts from 'v-charts';
 import Mint from 'mint-ui';
 import 'mint-ui/lib/style.css';
+import './assets/js/btnPermissions';
 
 Vue.use(ElementUI);
 Vue.use(VCharts);

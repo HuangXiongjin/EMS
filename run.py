@@ -63,9 +63,9 @@ class CUIDList(Resource):
 api.add_resource(CUIDList, '/CUID')
 
 
-# @login_manager.user_loader
-# def load_user(user_id):
-#     return db_session.query(User).filter_by(ID=int(user_id)).first()
+@login_manager.user_loader
+def load_user(user_id):
+    return db_session.query(User).filter_by(ID=int(user_id)).first()
 
 #
 # @app.errorhandler(Exception)

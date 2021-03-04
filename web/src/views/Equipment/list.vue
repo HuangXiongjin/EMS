@@ -68,9 +68,11 @@
           <el-table-column prop="EquipmentType" label="设备类别"></el-table-column>
           <!--<el-table-column prop="Brand" label="品牌"></el-table-column>-->
           <el-table-column prop="Specs" label="规格型号"></el-table-column>
-          <el-table-column prop="Unit" label="单位"></el-table-column>
-          <el-table-column prop="Source" label="设备来源"></el-table-column>
-          <el-table-column prop="Manufacturer" label="供应商"></el-table-column>
+          <!--<el-table-column prop="Unit" label="单位"></el-table-column>-->
+          <!--<el-table-column prop="Source" label="设备来源"></el-table-column>-->
+          <!--<el-table-column prop="Manufacturer" label="供应商"></el-table-column>-->
+          <el-table-column prop="Department" label="所属部门"></el-table-column>
+          <el-table-column prop="Position" label="所属区域"></el-table-column>
           <el-table-column prop="Status" label="设备状态">
             <template slot-scope="scope">
               <span class="btn-block bg-success color-white" v-if="scope.row.Status === '正常'">{{ scope.row.Status }}</span>
@@ -94,8 +96,6 @@
           <!--<el-table-column prop="PurchaseMoney" label="购置金额"></el-table-column>-->
           <!--<el-table-column prop="ScrapTime" label="预计报废时间"></el-table-column>-->
           <!--<el-table-column prop="Director" label="负责人"></el-table-column>-->
-          <!--<el-table-column prop="Department" label="所属部门"></el-table-column>-->
-          <!--<el-table-column prop="Position" label="放置位置"></el-table-column>-->
           <!--<el-table-column prop="IsDepreciation" label="折旧设备"></el-table-column>-->
           <!--<el-table-column prop="NetValue" label="当前净值"></el-table-column>-->
           <!--<el-table-column prop="TechnicalParameter" label="技术参数"></el-table-column>-->

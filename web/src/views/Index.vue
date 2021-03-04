@@ -128,8 +128,8 @@
             ]},
           {title: '保养管理',icon:"fa fa-history",mainMenu:[
               {title:"保养标准",url:"/upkeepStandard"},
-              {title:"保养计划",url:"/upkeepPlan"},
-              {title:"保养任务",url:"/upkeepTask"},
+              {title:"制定保养计划",url:"/upkeepPlan"},
+              {title:"保养计划管理",url:"/upkeepTask"},
             ]},
           {title: '点检巡检',icon:"fa fa-compass",mainMenu:[
               {title:"点巡检标准",url:"/inspectionStandard"},
